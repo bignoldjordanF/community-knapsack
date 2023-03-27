@@ -32,6 +32,10 @@ if __name__ == '__main__':
         PBAlgorithm.MEMOIZATION
     )
 
+    dynamic_programming = problem.solve(
+        PBAlgorithm.DYNAMIC_PROGRAMMING
+    )
+
     print(brute_force)
     print(memoization)
 
