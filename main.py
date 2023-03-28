@@ -29,16 +29,16 @@ if __name__ == '__main__':
     # )
     # print(brute_force)
 
-    memoization: PBResult = problem.solve(
-        PBAlgorithm.MEMOIZATION
-    )
-    print(memoization)
-
-    # dynamic_programming: PBResult = problem.solve(
-    #     PBAlgorithm.DYNAMIC_PROGRAMMING
+    # memoization: PBResult = problem.solve(
+    #     PBAlgorithm.MEMOIZATION
     # )
-    # print(dynamic_programming)
-
+    # print(memoization)
+    #
+    # # dynamic_programming: PBResult = problem.solve(
+    # #     PBAlgorithm.DYNAMIC_PROGRAMMING
+    # # )
+    # # print(dynamic_programming)
+    #
     branch_and_bound: PBResult = problem.solve(
         PBAlgorithm.BRANCH_AND_BOUND
     )
@@ -53,3 +53,8 @@ if __name__ == '__main__':
         PBAlgorithm.SIMULATED_ANNEALING
     )
     print(simulated_annealing)
+
+    genetic_algorithm: PBResult = problem.solve(
+        PBAlgorithm.GENETIC_ALGORITHM
+    )
+    print(genetic_algorithm)

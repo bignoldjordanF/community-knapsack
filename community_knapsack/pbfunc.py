@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 
 def aggregate_utilitarian(num_projects: int, utilities: List[List[int]]) -> List[int]:

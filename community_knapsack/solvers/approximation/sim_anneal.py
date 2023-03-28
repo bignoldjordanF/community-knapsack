@@ -1,7 +1,7 @@
 from numpy import exp
 from typing import List, Tuple
 from dataclasses import dataclass
-from random import randint, uniform
+import random
 
 
 @dataclass
@@ -30,7 +30,7 @@ class Allocation:
         _weight: int = self.weight
 
         # Flip a random bit in the allocation:
-        random_idx: int = randint(0, len(_allocation) - 1)
+        random_idx: int = random.randint(0, len(_allocation) - 1)
         _allocation[random_idx] = 1 - _allocation[random_idx]
 
         # Update the values and weights accordingly:
@@ -108,7 +108,7 @@ def simulated_annealing(
 
             # Accept neighbouring allocations with a lower value
             # with some probability, defined p=e^{-dV/T}:
-            q = uniform(0, 1)
+            q = random.uniform(0, 1)
             p = exp(-delta_value / current_temperature)
             if q < p:
                 current = neighbour

@@ -93,7 +93,7 @@ class PBProblem:
 
         values: List[int] = pbfunc.aggregate_utilitarian(
             self.num_projects,
-            self.utilities
+            self.utilities,
         )
 
         allocation = PBResult([], 0, 0.0, algorithm, None)
