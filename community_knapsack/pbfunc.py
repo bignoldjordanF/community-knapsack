@@ -1,7 +1,7 @@
 from typing import List
 
 
-def aggregate_utilities(num_projects: int, utilities: List[List[int]]):
+def aggregate_utilitarian(num_projects: int, utilities: List[List[int]]) -> List[int]:
     """
     Aggregates the multi-agent utilities by summing the votes for each project into a one-dimensional list.
 
@@ -11,14 +11,13 @@ def aggregate_utilities(num_projects: int, utilities: List[List[int]]):
     :return: A one-dimensional list of values for each project, i.e., values[i] is the value for project i.
     """
 
-    values: List[int] = [0] * num_projects
-    for votes in utilities:
-        for pid, vote in enumerate(votes):
-            values[pid] += vote
-    return values
+    return [
+        sum(votes[idx] for votes in utilities)
+        for idx in range(num_projects)
+    ]
 
 
-def resolve_project_ids(projects: List[int], allocation: List[int]):
+def resolve_project_ids(projects: List[int], allocation: List[int]) -> List[int]:
     """
     Resolves the project ids of the project indexes stored in allocation results.
 
@@ -26,4 +25,4 @@ def resolve_project_ids(projects: List[int], allocation: List[int]):
     :param allocation: A list of project indexes representing an allocation or solution to the problem.
     :return: An allocation (list) of project ids rather than project indexes.
     """
-    return [projects[idx] for idx, _ in enumerate(allocation)]
+    return [projects[idx] for _, idx in enumerate(allocation)]

@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 
-def memoization(capacity, weights, values):
+def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
     """
     A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result. This is
     also known as top-down dynamic programming.
@@ -14,16 +14,17 @@ def memoization(capacity, weights, values):
     :param capacity: The fixed capacity or budget for the problem. The allocation weights cannot exceed this number.
     :param weights: A list of weights for each item, i.e., weights[i] is the weight for item i.
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
-    :return: The optimal allocation for the problem as a list of project indexes and its overall value.
+    :return: The optimal allocation for the problem as a list of item indexes and its overall value.
     """
+    num_items: int = len(values)
 
     # Store the maximum value achievable for any sub-problem:
     matrix: List[List[Tuple[List[int], int]]] = [
         [([], -1) for _ in range(capacity + 1)]
-        for _ in range(len(values) + 1)
+        for _ in range(num_items + 1)
     ]
 
-    def explore(i, j):
+    def explore(i: int, j: int) -> Tuple[List[int], int]:
         # Avoid re-computation through
         # memoization:
         if matrix[i][j][1] != -1:
@@ -55,7 +56,7 @@ def memoization(capacity, weights, values):
 
         if include_val > exclude_val:
             # We store the updated allocation and value:
-            matrix[i][j] = (include[0] + [i], include_val)
+            matrix[i][j] = (include[0] + [i - 1], include_val)
             return matrix[i][j]
 
         matrix[i][j] = exclude
@@ -63,4 +64,4 @@ def memoization(capacity, weights, values):
 
     # We first consider one (the last) item
     # and thus have full capacity:
-    return explore(len(values), capacity)
+    return explore(num_items, capacity)

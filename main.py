@@ -17,11 +17,11 @@ if __name__ == '__main__':
 
     import random
     problem = PBProblem(
-        num_projects=15,
+        num_projects=20,
         num_voters=10,
-        budget=100_000,
-        costs=[random.randint(25_000, 100_000) for _ in range(15)],
-        utilities=[[random.randint(0, 1) for _ in range(15)] for _ in range(10)],
+        budget=100,
+        costs=[random.randint(10, 100) for _ in range(20)],
+        utilities=[[random.randint(0, 1) for _ in range(20)] for _ in range(10)],
     )
 
     brute_force = problem.solve(
@@ -36,6 +36,12 @@ if __name__ == '__main__':
         PBAlgorithm.DYNAMIC_PROGRAMMING
     )
 
+    branch_and_bound = problem.solve(
+        PBAlgorithm.BRANCH_AND_BOUND
+    )
+
     print(brute_force)
     print(memoization)
+    print(dynamic_programming)
+    print(branch_and_bound)
 

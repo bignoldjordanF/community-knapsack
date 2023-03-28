@@ -9,14 +9,14 @@ from enum import Enum
 
 class PBAlgorithm(Enum):
     BRUTE_FORCE = 0
-    """A very slow but exact algorithm that enumerates every possible allocation and returns the best (optimal) one."""
+    """A very slow but exact algorithm that enumerates every possible allocation and returns the best (optimal) one.
+    This is likely too slow and is very rarely applicable."""
 
     MEMOIZATION = 1
     """A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result."""
 
     DYNAMIC_PROGRAMMING = 2
-    """A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result. 
-    This is a good option to find an exact solution to a large problem."""
+    """A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result."""
 
     BRANCH_AND_BOUND = 3
     """A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
@@ -34,7 +34,7 @@ class PBAlgorithm(Enum):
     """A relatively fast algorithm derived from the process of evolution which provides approximations of the
     optimal solution."""
 
-    def is_approximate(self):
+    def is_approximate(self) -> bool:
         """
         :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
         """
@@ -70,18 +70,18 @@ class PBProblem:
         :param costs: A list of costs for each project, i.e., costs[i] is the cost of project i.
         :param utilities: A list of lists of utilities for each voter over the projects, i.e., utilities[v][p] is the
         utility voter v derives from project p.
-        :param projects: An optional list of custom project ids, defaulting to 1,...,num_projects otherwise.
-        :param voters: An optional list of custom voter ids, defaulting to 1,...,num_voters otherwise.
+        :param projects: An optional list of custom project ids, defaulting to 0,...,num_projects-1 otherwise.
+        :param voters: An optional list of custom voter ids, defaulting to 0,...,num_voters-1 otherwise.
         """
         self.num_projects: int = num_projects
         self.num_voters: int = num_voters
         self.budget: int = budget
         self.costs: List[int] = costs
         self.utilities: List[List[int]] = utilities
-        self.projects: List[int] = projects if projects else [idx + 1 for idx in range(num_projects)]
-        self.voters: List[int] = voters if voters else [idx + 1 for idx in range(num_voters)]
+        self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
+        self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
 
-    def solve(self, algorithm: PBAlgorithm):
+    def solve(self, algorithm: PBAlgorithm) -> PBResult:
         """
         Reduces a one-dimensional participatory budgeting problem to the one-dimensional knapsack problem
         and solves it using the specified algorithm.
@@ -91,10 +91,11 @@ class PBProblem:
         """
         start_time: float = default_timer()
 
-        values: List[int] = pbfunc.aggregate_utilities(
+        values: List[int] = pbfunc.aggregate_utilitarian(
             self.num_projects,
             self.utilities
         )
+
         allocation = PBResult([], 0, 0.0, algorithm, None)
 
         if algorithm == PBAlgorithm.BRUTE_FORCE:
@@ -119,6 +120,7 @@ class PBProblem:
             allocation = solvers.genetic_algorithm(self.budget, self.costs, values)
 
         end_time: float = default_timer()
+
         return PBResult(
             allocation=pbfunc.resolve_project_ids(
                 self.projects,
@@ -160,5 +162,5 @@ class PBMultiProblem(PBProblem):
         self.budget: List[int] = budgets
         self.costs: List[List[int]] = costs
 
-    def solve(self, algorithm: PBMultiAlgorithm):
+    def solve(self, algorithm: PBMultiAlgorithm) -> PBResult:
         pass

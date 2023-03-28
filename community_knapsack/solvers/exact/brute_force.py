@@ -1,13 +1,14 @@
-from timeit import default_timer as timer
+from typing import List, Tuple
 
 
-def brute_force(capacity, weights, values):
+def brute_force(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
     """
     A very slow but exact algorithm that enumerates every possible allocation and returns the optimal one.
 
     The allocations are enumerated by performing 2^n loops, where n is the number of items, and using the binary
     representation of each number 1,...,2^n to represent the allocation, where each bit-string of length n is unique.
-    The values and weights are calculated for each allocation, and the best one is returned.
+    The values and weights are calculated for each allocation, and the best one is returned. This clearly takes
+    O(2^n) time.
 
     As an indication of intractability, it takes ~0.15 seconds for n=15, ~4 seconds for n=20 and ~2 minutes for n=25.
 
@@ -21,7 +22,7 @@ def brute_force(capacity, weights, values):
     best_allocation: str = '0' * num_items
     best_value: int = 0
 
-    # Each $n$-length binary number from 1,...,n is unique -- each can represent an allocation,
+    # Each n-length binary number from 1,...,n is unique -- each can represent an allocation,
     # where each bit is an item (1 = included, 0 = excluded):
     num_allocations: int = 2**num_items
     for allocation_id in range(num_allocations):
