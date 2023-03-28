@@ -125,3 +125,11 @@ def branch_and_bound(capacity: int, weights: List[int], values: List[int]) -> Tu
             queue.append(exclude_node)
 
     return best_allocation, best_value
+
+
+def multi_branch_and_bound(
+        capacities: List[int],
+        weights: List[List[int]],
+        values: List[int]
+) -> Tuple[List[int], int]:
+    pass

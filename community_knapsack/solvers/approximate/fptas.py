@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 def fptas(capacity: int, weights: List[int], values: List[int], accuracy: float) -> Tuple[List[int], int]:
     """
-    A relatively fast algorithm that uses the dynamic programming algorithm to find an approximation within
+    A relatively fast algorithm that uses the dynamic programming algorithm to find an approximate within
     a percentage of the optimal allocation. A very good option for larger problem sizes where exact algorithms
     are too slow.
 

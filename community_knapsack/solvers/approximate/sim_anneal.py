@@ -119,3 +119,15 @@ def simulated_annealing(
 
     # Convert the allocation bits into a list of project indexes of included items:
     return [idx for idx, val in enumerate(best.allocation) if val == 1], best.value
+
+
+def multi_simulated_annealing(
+        capacities: List[int],
+        weights: List[List[int]],
+        values: List[int],
+        initial_temperature: float = 1.0,
+        temperature_length: int = 50_000,
+        cooling_ratio: float = 0.9,
+        stopping_temperature: float = 0.5
+) -> Tuple[List[int], int]:
+    pass

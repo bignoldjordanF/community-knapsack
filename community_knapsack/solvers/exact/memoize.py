@@ -65,3 +65,11 @@ def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
     # We first consider one (the last) item
     # and thus have full capacity:
     return explore(num_items, capacity)
+
+
+def multi_memoization(
+        capacities: List[int],
+        weights: List[List[int]],
+        values: List[int]
+) -> Tuple[List[int], int]:
+    pass

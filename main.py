@@ -1,60 +1,21 @@
 from community_knapsack import *
 
 if __name__ == '__main__':
-    # problem = PBProblem(
-    #     num_projects=4,
-    #     num_voters=5,
-    #     budget=10_000,
-    #     costs=[2_000, 6_000, 4_500, 5_000],
-    #     utilities=[
-    #         [1, 1, 0, 0],
-    #         [0, 1, 0, 1],
-    #         [0, 0, 0, 1],
-    #         [0, 0, 1, 0],
-    #         [0, 1, 1, 1]
-    #     ],
-    # )
 
     import random
-    problem = PBProblem(
-        num_projects=30,
+    problem = PBMultiProblem(
+        num_projects=15,
         num_voters=15,
-        budget=500_000,
-        costs=[random.randint(30_000, 100_000) for _ in range(30)],
-        utilities=[[random.randint(0, 10) for _ in range(30)] for _ in range(15)],
+        budget=[50_000, 10_000, 25_000],
+        costs=[
+            [random.randint(5_000, 20_000) for _ in range(15)],
+            [random.randint(1_000, 2_000) for _ in range(15)],
+            [random.randint(1_000, 3_000) for _ in range(15)]
+        ],
+        utilities=[[random.randint(0, 10) for _ in range(15)] for _ in range(15)],
     )
 
-    # brute_force: PBResult = problem.solve(
-    #     PBAlgorithm.BRUTE_FORCE
-    # )
-    # print(brute_force)
-
-    # memoization: PBResult = problem.solve(
-    #     PBAlgorithm.MEMOIZATION
-    # )
-    # print(memoization)
-    #
-    # # dynamic_programming: PBResult = problem.solve(
-    # #     PBAlgorithm.DYNAMIC_PROGRAMMING
-    # # )
-    # # print(dynamic_programming)
-    #
-    branch_and_bound: PBResult = problem.solve(
-        PBAlgorithm.BRANCH_AND_BOUND
+    brute_force: PBResult = problem.solve(
+        PBMultiAlgorithm.BRUTE_FORCE
     )
-    print(branch_and_bound)
-
-    fptas: PBResult = problem.solve(
-        PBAlgorithm.FPTAS
-    )
-    print(fptas)
-
-    simulated_annealing: PBResult = problem.solve(
-        PBAlgorithm.SIMULATED_ANNEALING
-    )
-    print(simulated_annealing)
-
-    genetic_algorithm: PBResult = problem.solve(
-        PBAlgorithm.GENETIC_ALGORITHM
-    )
-    print(genetic_algorithm)
+    print(brute_force)

@@ -196,3 +196,15 @@ def genetic_algorithm(
 
     # Convert the chromosome into a list of project indexes of included items, and return:
     return [idx for idx, val in enumerate(best_chromosome) if val == 1], best_fitness
+
+
+def multi_genetic_algorithm(
+        capacities: List[int],
+        weights: List[List[int]],
+        values: List[int],
+        population_size: int = 100,
+        crossover_rate: float = 0.8,
+        mutation_rate: float = 0.3,
+        num_generations: int = 250
+) -> Tuple[List[int], int]:
+    pass

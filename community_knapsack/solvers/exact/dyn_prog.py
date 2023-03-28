@@ -125,3 +125,11 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
             return matrix[num_items][v][0], v
 
     return [], 0
+
+
+def multi_dynamic_programming(
+        capacities: List[int],
+        weights: List[List[int]],
+        values: List[int]
+) -> Tuple[List[int], int]:
+    pass

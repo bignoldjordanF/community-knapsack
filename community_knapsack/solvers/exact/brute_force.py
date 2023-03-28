@@ -1,4 +1,34 @@
-from typing import List, Tuple
+from typing import List, Tuple, Callable
+
+
+def __brute_force(is_weight_valid: Callable[[str], bool], values: List[int]) -> Tuple[List[int], int]:
+    """
+
+    :param is_weight_valid:
+    :param values:
+    :return:
+    """
+    # We track the best allocation and value throughout the iteration:
+    num_items = len(values)
+    best_allocation: str = '0' * num_items
+    best_value: int = 0
+
+    # Each n-length binary number from 1,...,n is unique -- each can represent an allocation,
+    # where each bit is an item (1 = included, 0 = excluded):
+    num_allocations: int = 2**num_items
+    for allocation_id in range(num_allocations):
+
+        # Convert to binary and sum weights and values of included items in the allocation:
+        allocation: str = bin(allocation_id)[2:].zfill(num_items)
+        value: int = sum(values[idx] for idx, bit in enumerate(allocation) if bit == '1')
+
+        # Update the best allocation found so far:
+        if is_weight_valid(allocation) and value > best_value:
+            best_allocation = allocation
+            best_value = value
+
+    # Convert the bit-string into a list of project indexes of included items, and return:
+    return [idx for idx, val in enumerate(best_allocation) if val == '1'], best_value
 
 
 def brute_force(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
@@ -17,25 +47,38 @@ def brute_force(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
     """
-    # We track the best allocation and value throughout the iteration:
-    num_items = len(values)
-    best_allocation: str = '0' * num_items
-    best_value: int = 0
+    is_weight_valid: Callable[[str], bool] = lambda allocation: sum(
+        weights[j] for j, bit in enumerate(allocation) if bit == '1'
+    ) <= capacity
+    return __brute_force(is_weight_valid, values)
 
-    # Each n-length binary number from 1,...,n is unique -- each can represent an allocation,
-    # where each bit is an item (1 = included, 0 = excluded):
-    num_allocations: int = 2**num_items
-    for allocation_id in range(num_allocations):
+    # # We track the best allocation and value throughout the iteration:
+    # num_items = len(values)
+    # best_allocation: str = '0' * num_items
+    # best_value: int = 0
+    #
+    # # Each n-length binary number from 1,...,n is unique -- each can represent an allocation,
+    # # where each bit is an item (1 = included, 0 = excluded):
+    # num_allocations: int = 2**num_items
+    # for allocation_id in range(num_allocations):
+    #
+    #     # Convert to binary and sum weights and values of included items in the allocation:
+    #     allocation: str = bin(allocation_id)[2:].zfill(num_items)
+    #     value: int = sum(values[idx] for idx, bit in enumerate(allocation) if bit == '1')
+    #     weight: int = sum(weights[idx] for idx, bit in enumerate(allocation) if bit == '1')
+    #
+    #     # Update the best allocation found so far:
+    #     if weight <= capacity and value > best_value:
+    #         best_allocation = allocation
+    #         best_value = value
+    #
+    # # Convert the bit-string into a list of project indexes of included items, and return:
+    # return [idx for idx, val in enumerate(best_allocation) if val == '1'], best_value
 
-        # Convert to binary and sum weights and values of included items in the allocation:
-        allocation: str = bin(allocation_id)[2:].zfill(num_items)
-        value: int = sum(values[idx] for idx, bit in enumerate(allocation) if bit == '1')
-        weight: int = sum(weights[idx] for idx, bit in enumerate(allocation) if bit == '1')
 
-        # Update the best allocation found so far:
-        if weight <= capacity and value > best_value:
-            best_allocation = allocation
-            best_value = value
-
-    # Convert the bit-string into a list of project indexes of included items, and return:
-    return [idx for idx, val in enumerate(best_allocation) if val == '1'], best_value
+def multi_brute_force(capacities: List[int], weights: List[List[int]], values: List[int]) -> Tuple[List[int], int]:
+    is_weight_valid: Callable[[], bool] = lambda allocation: all(
+        sum(weights[i][j] for j, bit in enumerate(allocation) if bit == '1') <= capacities[i]
+        for i in range(len(capacities))
+    )
+    return __brute_force(is_weight_valid, values)
