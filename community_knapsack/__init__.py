@@ -1,1 +1,1 @@
-from .pbproblem import PBProblem, PBAlgorithm, PBMultiAlgorithm
+from .pbproblem import PBProblem, PBAlgorithm, PBMultiAlgorithm, PBResult

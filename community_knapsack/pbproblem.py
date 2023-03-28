@@ -105,7 +105,7 @@ class PBProblem:
             allocation = solvers.memoization(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.DYNAMIC_PROGRAMMING:
-            allocation = solvers.dynamic_programming(self.budget, self.costs, values)
+            allocation = solvers.dynamic_programming_min_weight(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.BRANCH_AND_BOUND:
             allocation = solvers.branch_and_bound(self.budget, self.costs, values)
