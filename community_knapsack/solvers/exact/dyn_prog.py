@@ -62,7 +62,8 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
     This variant of the dynamic programming algorithm works by finding for each iteration (i, v) the minimum weight
     achievable for an allocation containing any of the first i items that has at least v overall value. We say v
     is in the range {1, ..., sum(values)} where sum(values) is the highest value achievable. We can then backtrack
-    through our dynamic programming matrix to find the best allocation that does not exceed the capacity.
+    through our dynamic programming matrix to find the best allocation that does not exceed the capacity. This runs
+    in pseudo-polynomial O(n * n * P)=O(n^2 * P) time in the worst-case, where P is the maximum value (in values).
 
     :param capacity: The fixed capacity or budget for the problem. The allocation weights cannot exceed this number.
     :param weights: A list of weights for each item, i.e., weights[i] is the weight for item i.

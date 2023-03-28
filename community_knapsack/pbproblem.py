@@ -23,8 +23,8 @@ class PBAlgorithm(Enum):
     for a faster result. The run-time is exponential (slow) but can be much faster depending on the problem."""
 
     FPTAS = 4
-    """A relatively fast algorithm that uses the dynamic programming algorithm to find an approximation of the
-    optimal allocation. A very good option for large problem sizes where exact algorithms are too slow."""
+    """A relatively fast algorithm that uses the dynamic programming algorithm to find an approximation within
+    50% of the optimal allocation. A very good option for larger problem sizes where exact algorithms are too slow."""
 
     SIMULATED_ANNEALING = 5
     """A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
@@ -105,13 +105,13 @@ class PBProblem:
             allocation = solvers.memoization(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.DYNAMIC_PROGRAMMING:
-            allocation = solvers.dynamic_programming_min_weight(self.budget, self.costs, values)
+            allocation = solvers.dynamic_programming(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.BRANCH_AND_BOUND:
             allocation = solvers.branch_and_bound(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.FPTAS:
-            allocation = solvers.fptas(self.budget, self.costs, values)
+            allocation = solvers.fptas(self.budget, self.costs, values, 0.5)
 
         elif algorithm == PBAlgorithm.SIMULATED_ANNEALING:
             allocation = solvers.simulated_annealing(self.budget, self.costs, values)

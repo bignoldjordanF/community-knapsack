@@ -17,17 +17,17 @@ if __name__ == '__main__':
 
     import random
     problem = PBProblem(
-        num_projects=15,
+        num_projects=30,
         num_voters=15,
-        budget=100,
-        costs=[random.randint(10, 100) for _ in range(15)],
-        utilities=[[random.randint(0, 5) for _ in range(15)] for _ in range(15)],
+        budget=100_000,
+        costs=[random.randint(1_000, 10_000) for _ in range(30)],
+        utilities=[[random.randint(0, 5) for _ in range(30)] for _ in range(15)],
     )
 
-    brute_force: PBResult = problem.solve(
-        PBAlgorithm.BRUTE_FORCE
-    )
-    print(brute_force)
+    # brute_force: PBResult = problem.solve(
+    #     PBAlgorithm.BRUTE_FORCE
+    # )
+    # print(brute_force)
 
     memoization: PBResult = problem.solve(
         PBAlgorithm.MEMOIZATION
@@ -43,3 +43,8 @@ if __name__ == '__main__':
         PBAlgorithm.BRANCH_AND_BOUND
     )
     print(branch_and_bound)
+
+    fptas: PBResult = problem.solve(
+        PBAlgorithm.FPTAS
+    )
+    print(fptas)
