@@ -67,7 +67,7 @@ def simulated_annealing(
     :param temperature_length: An integer representing the number of neighbours generated per temperature.
     :param cooling_ratio: A decimal representing how much the temperature is reduced after each TL loops.
     :param stopping_temperature: The temperature at which the process should stop and the best allocation returned.
-    :return: The optimal allocation for the problem as a list of project indexes and its overall value.
+    :return: The best allocation found for the problem as a list of project indexes and its overall value.
     """
     num_items: int = len(values)
 

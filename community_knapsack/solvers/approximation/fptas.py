@@ -16,7 +16,7 @@ def fptas(capacity: int, weights: List[int], values: List[int], accuracy: float)
     :param weights: A list of weights for each item, i.e., weights[i] is the weight for item i.
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
     :param accuracy: The precision (between 0-1) of the allocation, i.e., % of optimal solution we will accept.
-    :return: The optimal allocation for the problem as a list of item indexes and its overall value.
+    :return: The best allocation found for the problem as a list of project indexes and its overall value.
     """
     num_items: int = len(values)
     max_value: int = max(values)
