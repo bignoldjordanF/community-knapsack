@@ -82,8 +82,8 @@ def multi_memoization(
     possible capacity, and thus the time complexity is O(n * max(capacities)^d), where d is the number of capacities,
     in the worst case.
 
-    :param capacities: The fixed capacities or resources for the problem. The allocation weights cannot exceed these.
-    :param weights: A 2D list for each resource and item, e.g., weights[j][i] is the weight of item i to resource j.
+    :param capacities: The fixed capacities for the problem. The allocation weights cannot exceed these.
+    :param weights: A 2D list for each capacity and item, e.g., weights[j][i] is the weight of item i to capacity j.
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
     """
