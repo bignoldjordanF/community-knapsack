@@ -1,5 +1,5 @@
 from numpy import exp
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from dataclasses import dataclass
 import random
 
@@ -121,6 +121,43 @@ def simulated_annealing(
     return [idx for idx, val in enumerate(best.allocation) if val == 1], best.value
 
 
+@dataclass
+class MultiAllocation:
+    allocation: List[int]
+    """An allocation as a list of zeroes (exclusion) and ones (inclusion) where each value represents an item."""
+
+    value: int
+    """The overall value of the allocation."""
+
+    weight: List[int]
+    """The overall weight of the allocation."""
+
+    def neighbour(self, values: List[int], weights: List[List[int]]) -> 'MultiAllocation':
+        """
+        Generates a neighbouring allocation by randomly selecting an item (bit) in the current allocation
+        and flipping it. If it is currently excluded, it becomes included, and vice versa.
+
+        :param values: A list of values for each item, i.e., values[i] is the value for item i.
+        :param weights: A 2D list for each capacity and item, e.g., weights[j][i] is the weight of item i to capacity j.
+        :return: A neighbouring allocation with one included item excluded or vice versa.
+        """
+        # Copy the allocation:
+        _allocation: List[int] = self.allocation[:]
+        _value: int = self.value
+        _weight: List[int] = self.weight
+
+        # Flip a random bit in the allocation:
+        random_idx: int = random.randint(0, len(_allocation) - 1)
+        _allocation[random_idx] = 1 - _allocation[random_idx]
+
+        # Update the values and weights accordingly:
+        inc_exc: int = 1 if _allocation[random_idx] else -1
+        _value += inc_exc * values[random_idx]
+        _weight = [_weight[cid] + (inc_exc * weights[cid][random_idx]) for cid in range(len(_weight))]
+
+        return MultiAllocation(_allocation, _value, _weight)
+
+
 def multi_simulated_annealing(
         capacities: List[int],
         weights: List[List[int]],
@@ -130,4 +167,55 @@ def multi_simulated_annealing(
         cooling_ratio: float = 0.9,
         stopping_temperature: float = 0.5
 ) -> Tuple[List[int], int]:
-    pass
+
+    num_items: int = len(values)
+
+    # The temperature is the likelihood of worse solutions
+    # being accepted, starting at the initial temperature:
+    current_temperature: float = initial_temperature
+
+    # The current and best allocations starts
+    # at the empty allocation:
+    current: MultiAllocation = MultiAllocation(
+        allocation=[0] * num_items,
+        value=0,
+        weight=[0] * len(capacities)
+    )
+    best: MultiAllocation = current
+
+    # Keep performing TL loops until the temperature is
+    # lower than or equal to the stopping temperature:
+    while stopping_temperature < current_temperature:
+        for _ in range(temperature_length):
+
+            # Generate the neighbour and skip it if
+            # any of the weights are higher than
+            # their respective capacities:
+            neighbour: MultiAllocation = \
+                current.neighbour(values, weights)
+
+            if any(neighbour.weight[cid] > capacity for cid, capacity in enumerate(capacities)):
+                continue
+
+            # Immediately accept neighbouring allocations that have
+            # a higher value than the current allocation:
+            delta_value: int = neighbour.value - current.value
+            if delta_value >= 0:
+                current = neighbour
+                if current.value > best.value:
+                    best = current
+                continue
+
+            # Accept neighbouring allocations with a lower value
+            # with some probability, defined p=e^{-dV/T}:
+            q = random.uniform(0, 1)
+            p = exp(-delta_value / current_temperature)
+            if q < p:
+                current = neighbour
+
+        # After TL loops, reduce the current temperature to
+        # accept fewer 'worse' solutions:
+        current_temperature *= cooling_ratio
+
+    # Convert the allocation bits into a list of project indexes of included items:
+    return [idx for idx, val in enumerate(best.allocation) if val == 1], best.value
