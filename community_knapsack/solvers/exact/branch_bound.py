@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from typing import List, Tuple
-from pulp import *
+# from pulp import *
 
 
 @dataclass
@@ -171,38 +171,45 @@ class MultiAllocationNode:
 
 def __multi_bound(capacities, items, node):
     """
+    Given an allocation node that is a subset of the first {1, ..., node.item} items, we use the ratio greedy
+    algorithm for the fractional multidimensional knapsack problem to approximate the upper bound or potential
+    of this node with the remaining items {node.item + 1, ..., num_items} items. This algorithm does *not*
+    exactly solve the problem and is an approximation.
 
     :param capacities: The fixed capacity or budget for the problem. The allocation weights cannot exceed this number.
     :param items: A list of item tuples (id, value, weight) sorted by value to weight ratio in non-decreasing order.
     :param node: A node representing an allocation (i.e. subset) of the first {1, ..., node.item} items.
     :return: A fractional value representing the potential value of this allocation given the remaining items.
     """
-    if any(capacity == 0 for capacity in capacities):
-        return 0.0
 
-    if any(node.weight[cid] >= capacity for cid, capacity in enumerate(capacities)):
+    # If there is no capacity then we want to prune this branch, so give it a
+    # zero bound:
+    if any(capacity <= node.weight[cid] for cid, capacity in enumerate(capacities)):
         return 0.0
 
     bound: float = node.value
     item: int = node.item + 1
     weight: List[int] = node.weight
 
-    while item < len(items) and all(weight[cid] + items[item][2][cid] <= capacity for cid, capacity in enumerate(capacities)):
+    # Add as many full items as possible until we run out of items or the current item cannot fit:
+    while item < len(items) and \
+            all(weight[cid] + items[item][2][cid] <= capacity for cid, capacity in enumerate(capacities)):
         weight = [weight[cid] + items[item][2][cid] for cid, capacity in enumerate(capacities)]
         bound += items[item][1]
         item += 1
 
-    # Keep trying for all items and find the best bound?
+    # If the capacities were insufficient, then include the highest fraction of the item
+    # possible with the remaining capacities:
     if item < len(items):
-        most_exceeded: int = 0
-        most_exceeded_id: int = 0
+        # In simple terms, take the capacity with the smallest 'wiggle room' and then
+        # fill that capacity as much as possible:
+        fraction: float = float('inf')
         for cid, capacity in enumerate(capacities):
-            surplus: int = (weight[cid] + items[item][2][cid]) - capacity
-            if surplus > most_exceeded:
-                most_exceeded = surplus
-                most_exceeded_id = cid
-        limit: int = capacities[most_exceeded_id] - weight[most_exceeded_id]
-        bound += (limit / items[item][2][most_exceeded_id]) * items[item][1]
+            diff: int = capacity - weight[cid]  # Amount of 'wiggle room'
+            fraction: float = min(fraction, diff / items[item][2][cid])  # Fraction of item
+        if fraction == float('inf'):
+            fraction = 0.0
+        bound += fraction * items[item][1]  # Update upper value bound
 
     return bound
 
@@ -238,7 +245,7 @@ def multi_branch_and_bound(
 
     # A queue for breadth-first search, i.e., for constant-time pop operations:
     queue: deque[MultiAllocationNode] = deque()
-    queue.append(MultiAllocationNode(-1, 0, [0] * len(capacities), 0.0, [])) # Root Node
+    queue.append(MultiAllocationNode(-1, 0, [0] * len(capacities), 0.0, []))  # Root Node
 
     best_allocation: List[int] = []
     best_value: int = 0
@@ -253,12 +260,15 @@ def multi_branch_and_bound(
         include_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(capacities), 0.0, [])
         include_node.item = current_node.item + 1
         include_node.value = current_node.value + items[include_node.item][1]
-        include_node.weight = [current_node.weight[cid] + items[include_node.item][2][cid] for cid, _ in enumerate(capacities)]
+        include_node.weight = [
+            current_node.weight[cid] + items[include_node.item][2][cid] for cid, _ in enumerate(capacities)
+        ]
         include_node.allocation = current_node.allocation[:] + [items[include_node.item][0]]
         include_node.bound = __multi_bound(capacities, items, include_node)
 
         # We only update the best allocation in the include case, and it must be valid:
-        if all(include_node.weight[cid] <= capacity for cid, capacity in enumerate(capacities)) and include_node.value > best_value:
+        if include_node.value > best_value and \
+                all(include_node.weight[cid] <= capacity for cid, capacity in enumerate(capacities)):
             best_value = include_node.value
             best_allocation = include_node.allocation
 
