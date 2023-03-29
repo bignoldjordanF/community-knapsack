@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 
 def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
@@ -63,7 +63,7 @@ def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
         return matrix[i][j]
 
     # We first consider one (the last) item
-    # and thus have full capacity:
+    # and have full capacity:
     return explore(num_items, capacity)
 
 
@@ -72,4 +72,62 @@ def multi_memoization(
         weights: List[List[int]],
         values: List[int]
 ) -> Tuple[List[int], int]:
-    pass
+    """
+    An exact algorithm that improves upon the brute force algorithm for a faster result. This is also known as a
+    top-down dynamic programming approach.
+
+    The algorithm explores all possible allocations through branches in a recursion tree, i.e., we create two
+    branches: one that includes the current item and one that does not. We store the results of branches that have
+    already been explored thus avoiding re-computation. In the worst case, we explore every possible item and every
+    possible capacity, and thus the time complexity is O(n * max(capacities)^d), where d is the number of capacities,
+    in the worst case.
+
+    :param capacities: The fixed capacities or resources for the problem. The allocation weights cannot exceed these.
+    :param weights: A 2D list for each resource and item, e.g., weights[j][i] is the weight of item i to resource j.
+    :param values: A list of values for each item, i.e., values[i] is the value for item i.
+    :return: The optimal allocation for the problem as a list of project indexes and its overall value.
+    """
+    num_items: int = len(values)
+
+    # Store the maximum value achievable for any sub-problem.
+    # This approach uses a dictionary to avoid dealing with
+    # a rigid d-dimensional matrix:
+    memo: Dict[Tuple[int, Tuple[int]], Tuple[List[int], int]] = {}
+
+    def explore(i: int, j: List[int]):
+        # Avoid re-computation through memoization:
+        sub_problem: Tuple[int, Tuple[int]] = (i, tuple(j))
+        if sub_problem in memo:
+            return memo[sub_problem]
+
+        # (Base Case)
+        # We have no more items or capacity to consider:
+        if i == 0 or any(capacity == 0 for capacity in j):
+            memo[sub_problem] = ([], 0)
+            return memo[sub_problem]
+
+        # (Recursive Case 1)
+        # We cannot fit the current item, so we must exclude:
+        if any(weights[cid][i - 1] > capacity for cid, capacity in enumerate(j)):
+            memo[sub_problem] = explore(i - 1, j)
+            return memo[sub_problem]
+
+        # (Recursive Case 2)
+        # Find the maximum values from including and excluding. We must update
+        # the capacity list to reflect including the item:
+        j_updated: List[int] = [capacity - weights[cid][i - 1] for cid, capacity in enumerate(j)]
+        include: Tuple[List[int], int] = explore(i - 1, j_updated)
+        exclude: Tuple[List[int], int] = explore(i - 1, j)
+
+        # Accept the allocation that includes the current item if and only if
+        # it has a higher overall value, otherwise accept the exclusion:
+        if include[1] + values[i - 1] > exclude[1]:
+            memo[sub_problem] = (include[0] + [i - 1], include[1] + values[i - 1])
+            return memo[sub_problem]
+
+        memo[sub_problem] = exclude
+        return memo[sub_problem]
+
+    # We first consider one (the last) item
+    # and have full capacity:
+    return explore(num_items, capacities)

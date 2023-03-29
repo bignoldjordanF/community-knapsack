@@ -19,3 +19,8 @@ if __name__ == '__main__':
         PBMultiAlgorithm.BRUTE_FORCE
     )
     print(brute_force)
+
+    memoization: PBResult = problem.solve(
+        PBMultiAlgorithm.MEMOIZATION
+    )
+    print(memoization)
