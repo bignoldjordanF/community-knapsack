@@ -13,10 +13,12 @@ class PBAlgorithm(Enum):
     This is likely too slow and is very rarely applicable."""
 
     MEMOIZATION = 1
-    """A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result."""
+    """A relatively slow pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster
+    result."""
 
     DYNAMIC_PROGRAMMING = 2
-    """A pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster result."""
+    """A relatively slow pseudo-polynomial, exact algorithm that improves upon the brute force algorithm for a faster
+    result."""
 
     BRANCH_AND_BOUND = 3
     """A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
@@ -139,10 +141,11 @@ class PBMultiAlgorithm(Enum):
     This is likely too slow and is very rarely applicable."""
 
     MEMOIZATION = 1
-    """An exact algorithm that improves upon the brute force algorithm for a faster result."""
+    """A relatively slow exact algorithm that improves upon the brute force algorithm for a faster result."""
 
     DYNAMIC_PROGRAMMING = 2
-    """An exact algorithm that improves upon the brute force algorithm for a faster result."""
+    """An exact algorithm that improves upon the brute force algorithm, but is still extremely slow given larger
+    problem sizes, especially with multiple dimensions. This is very rarely applicable."""
 
     BRANCH_AND_BOUND = 3
     """A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
