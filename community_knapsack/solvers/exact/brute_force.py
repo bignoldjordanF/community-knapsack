@@ -17,11 +17,12 @@ def __brute_force(is_weight_valid: Callable[[str], bool], values: List[int]) -> 
     num_allocations: int = 2**num_items
     for allocation_id in range(num_allocations):
 
-        # Convert to binary and sum weights and values of included items in the allocation:
+        # Convert to binary and sum values of included items in the allocation:
         allocation: str = bin(allocation_id)[2:].zfill(num_items)
         value: int = sum(values[idx] for idx, bit in enumerate(allocation) if bit == '1')
 
-        # Update the best allocation found so far:
+        # Update the best allocation found so far if it does
+        # not exceed the weight capacity:
         if is_weight_valid(allocation) and value > best_value:
             best_allocation = allocation
             best_value = value
@@ -67,13 +68,13 @@ def multi_brute_force(capacities: List[int], weights: List[List[int]], values: L
     As an example of intractability as the problem scales, it takes ~0.15 seconds for n=15, ~4 seconds for n=20
     and ~2 minutes for n=25.
 
-    :param capacities: The fixed capacities or resources for the problem. The allocation weights cannot exceed these.
-    :param weights: A 2D list for each resource and item, e.g., weights[j][i] is the weight of item i to resource j.
+    :param capacities: The fixed capacities for the problem. The allocation weights cannot exceed these.
+    :param weights: A 2D list for each capacity and item, e.g., weights[j][i] is the weight of item i to capacity j.
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
     """
     # Checks whether an allocation is valid by summing the weights
-    # of included items for each resource and checking they are
+    # of included items for each capacity and checking they are
     # less than each resource:
     is_weight_valid: Callable[[str], bool] = lambda allocation: all(
         sum(weights[i][j] for j, bit in enumerate(allocation) if bit == '1') <= capacities[i]
