@@ -62,8 +62,9 @@ def __bound(capacity: int, items: List[Tuple[int, int, int]], node: AllocationNo
 
 def branch_and_bound(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
     """
-    A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
-    for a faster result. The run-time is exponential (slow) but can be much faster depending on the problem.
+    An exact algorithm that begins to enumerate every possible allocation but prunes certain branches
+    for a faster result. The run-time is exponential (slow) but can be much faster depending on the
+    problem.
 
     Uses a breadth-first search approach to create a tree of allocations, where each level is an item, and we
     either decide to include or exclude it. Uses bounding and fathoms nodes to prune branches when there is
@@ -81,7 +82,7 @@ def branch_and_bound(capacity: int, weights: List[int], values: List[int]) -> Tu
     items: List[Tuple[int, int, int]] = [(idx, values[idx], weights[idx]) for idx in range(num_items)]
     items.sort(key=lambda item: item[1] / item[2], reverse=True)
 
-    # A queue for breadth-first search, i.e., constant-time pop operations:
+    # A queue for breadth-first search, i.e., for constant-time pop operations:
     queue: deque[AllocationNode] = deque()
     queue.append(AllocationNode(-1, 0, 0, 0.0, []))  # Root Node
 
@@ -112,7 +113,7 @@ def branch_and_bound(capacity: int, weights: List[int], values: List[int]) -> Tu
         if include_node.bound > best_value:
             queue.append(include_node)
 
-        # The include node is the allocation that excludes `node.item`:
+        # The exclude node is the allocation that excludes `node.item`:
         exclude_node: AllocationNode = AllocationNode(0, 0, 0, 0.0, [])
         exclude_node.item = current_node.item + 1
         exclude_node.value = current_node.value
@@ -169,6 +170,13 @@ class MultiAllocationNode:
 
 
 def __multi_bound(capacities, items, node):
+    """
+
+    :param capacities: The fixed capacity or budget for the problem. The allocation weights cannot exceed this number.
+    :param items: A list of item tuples (id, value, weight) sorted by value to weight ratio in non-decreasing order.
+    :param node: A node representing an allocation (i.e. subset) of the first {1, ..., node.item} items.
+    :return: A fractional value representing the potential value of this allocation given the remaining items.
+    """
     if any(capacity == 0 for capacity in capacities):
         return 0.0
 
@@ -205,29 +213,43 @@ def multi_branch_and_bound(
         values: List[int]
 ) -> Tuple[List[int], int]:
     """
+    An approximation algorithm that begins to enumerate every possible allocation but prunes
+    certain branches for a faster result. The run-time is exponential (slow) but can be much
+    faster depending on the problem.
 
-    :param capacities:
-    :param weights:
-    :param values:
-    :return:
+    Uses a breadth-first search approach to create a tree of allocations, where each level is an item,
+    and we either decide to include or exclude it. Uses an approximation algorithm (ratio greedy) to
+    bound and fathom nodes to prune branches when there is no point exploring further. This improves
+    from brute force but can lead to inaccuracies due to the bounding approximation. The worst-case
+    time complexity is O(n^2 * d), where d is the number of constraints, but it may perform much
+    more efficiently.
+
+    :param capacities: The fixed capacities for the problem. The allocation weights cannot exceed these.
+    :param weights: A 2D list for each capacity and item, e.g., weights[j][i] is the weight of item i to capacity j.
+    :param values: A list of values for each item, i.e., values[i] is the value for item i.
+    :return: The allocation for the problem as a list of project indexes and its overall value.
     """
     num_items: int = len(values)
 
+    # The items are considered by their value to weight ratio for the greedy bounding algorithm:
     items: List[Tuple[int, int, List[int]]] = \
         [(idx, values[idx], [weights[cid][idx] for cid, _ in enumerate(capacities)]) for idx in range(num_items)]
     items.sort(key=lambda item: item[1] / sum(item[2]), reverse=True)
 
+    # A queue for breadth-first search, i.e., for constant-time pop operations:
     queue: deque[MultiAllocationNode] = deque()
-    queue.append(MultiAllocationNode(-1, 0, [0] * len(capacities), 0.0, []))
+    queue.append(MultiAllocationNode(-1, 0, [0] * len(capacities), 0.0, [])) # Root Node
 
     best_allocation: List[int] = []
     best_value: int = 0
 
     while queue:
+        # The current node represents an allocation considering `node.item` items:
         current_node: MultiAllocationNode = queue.popleft()
         if current_node.item == num_items - 1:
             continue
 
+        # The include node is the allocation that includes `node.item`:
         include_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(capacities), 0.0, [])
         include_node.item = current_node.item + 1
         include_node.value = current_node.value + items[include_node.item][1]
@@ -235,13 +257,17 @@ def multi_branch_and_bound(
         include_node.allocation = current_node.allocation[:] + [items[include_node.item][0]]
         include_node.bound = __multi_bound(capacities, items, include_node)
 
+        # We only update the best allocation in the include case, and it must be valid:
         if all(include_node.weight[cid] <= capacity for cid, capacity in enumerate(capacities)) and include_node.value > best_value:
             best_value = include_node.value
             best_allocation = include_node.allocation
 
+        # If the node has more promise or potential than our best value,
+        # we do not prune the branch:
         if include_node.bound > best_value:
             queue.append(include_node)
 
+        # The exclude node is the allocation that excludes `node.item`:
         exclude_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(capacities), 0.0, [])
         exclude_node.item = current_node.item + 1
         exclude_node.value = current_node.value
@@ -249,6 +275,8 @@ def multi_branch_and_bound(
         exclude_node.allocation = current_node.allocation[:]
         exclude_node.bound = __multi_bound(capacities, items, exclude_node)
 
+        # If the node has more promise or potential than our best value,
+        # we do not prune the branch:
         if exclude_node.bound > best_value:
             queue.append(exclude_node)
 
