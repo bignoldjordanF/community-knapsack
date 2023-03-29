@@ -21,7 +21,7 @@ class PBAlgorithm(Enum):
     result."""
 
     BRANCH_AND_BOUND = 3
-    """A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
+    """An exact algorithm that begins to enumerate every possible allocation but prunes certain branches
     for a faster result. The run-time is exponential (slow) but can be much faster depending on the problem."""
 
     FPTAS = 4
@@ -46,9 +46,11 @@ class PBAlgorithm(Enum):
 
     def is_approximate(self) -> bool:
         """
-        :return: True if the algorithm is an approximate scheme, or false for exact algorithms.
+        :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
         """
         return self in (
+            PBAlgorithm.GREEDY,
+            PBAlgorithm.RATIO_GREEDY,
             PBAlgorithm.FPTAS,
             PBAlgorithm.SIMULATED_ANNEALING,
             PBAlgorithm.GENETIC_ALGORITHM
@@ -162,9 +164,9 @@ class PBMultiAlgorithm(Enum):
     problem sizes, especially with multiple dimensions. This is very rarely applicable."""
 
     BRANCH_AND_BOUND = 3
-    """A relatively fast *approximation* algorithm that begins to enumerate every possible allocation but prunes 
-    certain branches for a faster result. The run-time is exponential (slow) but can be much faster depending
-    on the problem."""
+    """An approximation algorithm that begins to enumerate every possible allocation but prunes 
+    certain branches for a faster result. The run-time is exponential (slow) but can be much 
+    faster depending on the problem."""
 
     SIMULATED_ANNEALING = 4
     """A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
@@ -187,6 +189,8 @@ class PBMultiAlgorithm(Enum):
         :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
         """
         return self in (
+            PBMultiAlgorithm.GREEDY,
+            PBMultiAlgorithm.RATIO_GREEDY,
             PBMultiAlgorithm.BRANCH_AND_BOUND,
             PBMultiAlgorithm.SIMULATED_ANNEALING,
             PBMultiAlgorithm.GENETIC_ALGORITHM
