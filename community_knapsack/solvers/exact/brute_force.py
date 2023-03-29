@@ -61,10 +61,10 @@ def multi_brute_force(capacities: List[int], weights: List[List[int]], values: L
 
     The allocations are enumerated by performing 2^n loops, where n is the number of items, and using the binary
     representation of each number 1,...,2^n to represent the allocation, where each bit-string of length n is unique.
-    The values and weights are calculated for each allocation, and the best one is returned. This clearly takes
-    O(2^n) time.
+    The values and weights are calculated for each allocation, and the best one is returned. The time complexity
+    is exponential in the number of items, i.e., O(2^n * d), where d is the number of constraints.
 
-    As an indication of intractability as the problem scales, it takes ~0.15 seconds for n=15, ~4 seconds for n=20
+    As an example of intractability as the problem scales, it takes ~0.15 seconds for n=15, ~4 seconds for n=20
     and ~2 minutes for n=25.
 
     :param capacities: The fixed capacities or resources for the problem. The allocation weights cannot exceed these.
