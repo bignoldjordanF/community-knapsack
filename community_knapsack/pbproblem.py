@@ -36,6 +36,14 @@ class PBAlgorithm(Enum):
     """A relatively fast algorithm derived from the process of evolution which provides approximations of the
     optimal solution."""
 
+    GREEDY = 7
+    """A fast approximation algorithm that picks projects by their overall value. This is commonly used
+    in real-world budget allocations."""
+
+    RATIO_GREEDY = 8
+    """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
+    value-to-weight ratio."""
+
     def is_approximate(self) -> bool:
         """
         :return: True if the algorithm is an approximate scheme, or false for exact algorithms.
@@ -121,6 +129,12 @@ class PBProblem:
         elif algorithm == PBAlgorithm.GENETIC_ALGORITHM:
             allocation = solvers.genetic_algorithm(self.budget, self.costs, values)
 
+        elif algorithm == PBAlgorithm.GREEDY:
+            allocation = solvers.greedy(self.budget, self.costs, values)
+
+        elif algorithm == PBAlgorithm.RATIO_GREEDY:
+            allocation = solvers.ratio_greedy(self.budget, self.costs, values)
+
         end_time: float = default_timer()
 
         return PBResult(
@@ -148,8 +162,9 @@ class PBMultiAlgorithm(Enum):
     problem sizes, especially with multiple dimensions. This is very rarely applicable."""
 
     BRANCH_AND_BOUND = 3
-    """A relatively slow algorithm that begins to enumerate every possible allocation but prunes certain searches
-    for a faster result. The run-time is exponential (slow) but can be much faster depending on the problem."""
+    """A relatively fast *approximation* algorithm that begins to enumerate every possible allocation but prunes 
+    certain branches for a faster result. The run-time is exponential (slow) but can be much faster depending
+    on the problem."""
 
     SIMULATED_ANNEALING = 4
     """A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
@@ -159,11 +174,20 @@ class PBMultiAlgorithm(Enum):
     """A relatively fast algorithm derived from the process of evolution which provides approximations of the
     optimal solution."""
 
+    GREEDY = 7
+    """A fast approximation algorithm that picks projects by their overall value. This is commonly used
+    in real-world budget allocations."""
+
+    RATIO_GREEDY = 8
+    """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
+    value-to-weight ratio, where weight is the sum of all weights for each item."""
+
     def is_approximate(self) -> bool:
         """
         :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
         """
         return self in (
+            PBMultiAlgorithm.BRANCH_AND_BOUND,
             PBMultiAlgorithm.SIMULATED_ANNEALING,
             PBMultiAlgorithm.GENETIC_ALGORITHM
         )
@@ -223,6 +247,12 @@ class PBMultiProblem(PBProblem):
 
         elif algorithm == PBMultiAlgorithm.GENETIC_ALGORITHM:
             allocation = solvers.multi_genetic_algorithm(self.budget, self.costs, values)
+
+        elif algorithm == PBMultiAlgorithm.GREEDY:
+            allocation = solvers.multi_greedy(self.budget, self.costs, values)
+
+        elif algorithm == PBMultiAlgorithm.RATIO_GREEDY:
+            allocation = solvers.multi_ratio_greedy(self.budget, self.costs, values)
 
         end_time: float = default_timer()
 
