@@ -282,3 +282,6 @@ poetry.toml
 
 # LSP config files
 pyrightconfig.json
+
+# Ignore .pb files
+*.pb
