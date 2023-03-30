@@ -3,7 +3,7 @@ from . import solvers
 
 from collections import namedtuple
 from timeit import default_timer
-from typing import List, Dict
+from typing import List
 from enum import Enum
 
 
