@@ -29,12 +29,11 @@ def resolve_project_ids(projects: List[int], allocation: List[int]) -> List[int]
 
 
 def ordinal_to_utility(lookup: Dict[int, int], preferences: List[int]):
-    elicited: int = len(lookup) - len(preferences)
-    votes: int = elicited
     utilities: List[int] = [0] * len(lookup)
+    count: int = 1
     for preference in reversed(preferences):
-        utilities[lookup[preference]] = votes
-        votes += 1
+        utilities[lookup[preference]] = count
+        count += 1
     return utilities
 
 
