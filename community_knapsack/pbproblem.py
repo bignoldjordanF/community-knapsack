@@ -25,7 +25,7 @@ class PBAlgorithm(Enum):
     for a faster result. The run-time is exponential (slow) but can be much faster depending on the problem."""
 
     FPTAS = 4
-    """A relatively fast algorithm that uses the dynamic programming algorithm to find an approximate within
+    """A relatively fast algorithm that uses the dynamic programming algorithm to find an approximation within
     50% of the optimal allocation. A very good option for larger problem sizes where exact algorithms are too slow."""
 
     SIMULATED_ANNEALING = 5
@@ -92,6 +92,12 @@ class PBProblem:
         self.utilities: List[List[int]] = utilities
         self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
         self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
+
+    def __str__(self) -> str:
+        """
+        :return: A string representing the problem data.
+        """
+        return str(self.__dict__)
 
     def solve(self, algorithm: PBAlgorithm) -> PBResult:
         """
