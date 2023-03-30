@@ -133,7 +133,7 @@ class PBProblem:
             allocation = solvers.branch_and_bound(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.FPTAS:
-            allocation = solvers.fptas(self.budget, self.costs, values, 0.5)
+            allocation = solvers.fptas(self.budget, self.costs, values)
 
         elif algorithm == PBAlgorithm.SIMULATED_ANNEALING:
             allocation = solvers.simulated_annealing(self.budget, self.costs, values)
