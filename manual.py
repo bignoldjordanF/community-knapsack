@@ -59,8 +59,7 @@ def multi_example():
         ]
     )
 
-    # Solve with e.g. ratio greedy,
-    # approximate branch and bound
+    # Solve with e.g. ratio greedy, approximate branch and bound
     # and simulated annealing:
     ratio_greedy: PBResult = problem.solve(PBMultiAlgorithm.RATIO_GREEDY)
     branch_and_bound: PBResult = problem.solve(PBMultiAlgorithm.BRANCH_AND_BOUND)
