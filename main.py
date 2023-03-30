@@ -15,8 +15,12 @@ if __name__ == '__main__':
     # ratio_greedy = problem.solve(PBAlgorithm.RATIO_GREEDY)
     # print(greedy)
     # print(ratio_greedy)
-    # exact = problem.solve(PBAlgorithm.MEMOIZATION)
+    # exact = problem.solve(PBAlgorithm.DYNAMIC_PROGRAMMING)
     # print(exact)
+    # sim_anneal = problem.solve(PBAlgorithm.SIMULATED_ANNEALING)
+    # print(sim_anneal)
+    # genetic = problem.solve(PBAlgorithm.GENETIC_ALGORITHM)
+    # print(genetic)
 
     problem = PBMultiProblem(
         num_projects=20,
@@ -60,8 +64,8 @@ if __name__ == '__main__':
     )
     print(sim_anneal)
 
-    # genetic: PBResult = problem.solve(
-    #     PBMultiAlgorithm.GENETIC_ALGORITHM
-    # )
-    # print(genetic)
+    genetic: PBResult = problem.solve(
+        PBMultiAlgorithm.GENETIC_ALGORITHM
+    )
+    print(genetic)
 
