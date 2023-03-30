@@ -6,94 +6,101 @@ from . import pbfunc
 
 class PBParser:
     def __init__(self, file_path: str):
+        """
+        Instantiates a PBParser object, but does not parse the file. A
+        PBProblem instance can be extracted through the problem() method.
+
+        :param file_path: The path to the .pb file.
+        """
         self._file_path: str = file_path
-        self._problem: Optional[PBProblem] = None
-        self._predefined: PBResult = PBResult(0, 0, 0.0, -1, -1)
+        self._meta: Dict[str, str] = {}
+        self._projects: Dict[str, Dict[str, str]] = {}
+        self._voters: Dict[str, Dict[str, str]] = {}
+        self._predefined: Optional[PBResult] = PBResult([], 0, 0.0, -1, -1)
 
-    def problem(self) -> PBProblem:
-        if self._problem:
-            return self._problem
+    def _parse(self) -> None:
+        """
+        Parses a .pb file into meta, projects and voter dictionaries storing
+        all the instance data.
 
-        num_projects: int = 0
-        num_voters: int = 0
-        budget: int = 0
-        vote_type: str = ''
-
-        project_lookup: Dict[int, int] = {}
-        projects: List[int] = []
-
-        voter_lookup: Dict[int, int] = {}
-        voters: List[int] = []
-
-        costs: List[int] = []
-        utilities: List[List[int]] = []
-
-        predefined: List[int] = []
-
+        Reference: http://pabulib.org/code
+        """
         with open(self._file_path, 'r', newline='', encoding='utf-8') as csv_file:
             section: str = ''
             header: List[str] = []
-
-            cur_project_idx: int = 0
-            cur_voter_idx: int = 0
-
             reader: csv.reader = csv.reader(csv_file, delimiter=';')
             for row in reader:
-                if str(row[0]).strip().lower() in ('meta', 'projects', 'votes'):
-                    section = str(row[0]).strip().lower()
+                if row[0].strip().lower() in ('meta', 'projects', 'votes'):
+                    section = row[0].strip().lower()
                     header = next(reader)
+                # Metadata
                 elif section == 'meta':
-                    if row[0].strip().lower() == 'budget':
-                        budget = int(row[1].strip())
-                    elif row[0].strip().lower() == 'num_projects':
-                        num_projects = int(row[1].strip())
-                    elif row[0].strip().lower() == 'num_voters':
-                        num_voters = int(row[1].strip())
-                    elif row[0].strip().lower() == 'vote_type':
-                        vote_type = row[1].strip()
+                    self._meta[row[0]] = row[1].strip()
+                # Projects
                 elif section == 'projects':
-                    project_id: int = int(row[0])
-                    project_lookup[project_id] = cur_project_idx
-                    projects.append(project_id)
+                    self._projects[row[0]] = {}
                     for it, key in enumerate(header[1:]):
-                        if key.strip() == 'cost':
-                            costs.append(int(row[it + 1].strip()))
-                        elif key.strip() == 'selected':
-                            if row[it + 1].strip() == '1':
-                                predefined.append(project_id)
-                    cur_project_idx += 1
+                        self._projects[row[0]][key.strip()] = row[it + 1].strip()
+                # Voters
                 elif section == 'votes':
-                    voter_id: int = int(row[0])
-                    voter_lookup[voter_id] = cur_voter_idx
-                    voters.append(voter_id)
-
-                    votes: List[int] = []
-                    points: List[int] = []
-
+                    self._voters[row[0]] = {}
                     for it, key in enumerate(header[1:]):
-                        if key.strip() == 'vote':
-                            votes = [int(pid) for pid in row[it+1].strip().split(',')]
-                        elif key.strip() == 'points':
-                            points = [int(p) for p in row[it+1].strip().split(',')]
+                        self._voters[row[0]][key.strip()] = row[it + 1].strip()
 
-                    utilities.append(pbfunc.votes_to_utility(vote_type, project_lookup, votes, points))
-                    cur_voter_idx += 1
+    def problem(self) -> PBProblem:
+        """
+        Parses a .pb file and returns the instance as a PBProblem object for solving.
+        The votes are represented as utility values in the returned problem, where
+        utilities[v][p] is the utility voter v derives from project p.
 
-        values: List[int] = pbfunc.aggregate_utilitarian(
-            num_projects=num_projects,
-            utilities=utilities
-        )
+        Reference: http://pabulib.org/code
+
+        :return: A PBProblem object containing the PB instance for solving.
+        """
+        if not self._meta:
+            self._parse()
+
+        # Problem Metadata
+        num_projects: int = len(self._projects)
+        num_voters: int = len(self._voters)
+        budget: int = int(self._meta['budget'])
+        vote_type: str = self._meta['vote_type']
+
+        # Project Data
+        projects: List[int] = [int(pid) for pid in self._projects.keys()]
+        costs: List[int] = [int(self._projects[pid]['cost']) for pid in self._projects.keys()]
+
+        # Reverse Project Lookup (pid -> projects[idx])
+        project_lookup: Dict[int, int] = {pid: idx for idx, pid in enumerate(projects)}
+
+        # Voter Data
+        voters: List[int] = [int(vid) for vid in self._voters.keys()]
+        voters_lookup: Dict[int, int] = {vid: idx for idx, vid in enumerate(voters)}
+
+        # The utility values are derived from the votes, which may
+        # be approval, cumulative, scoring or ordinal voting:
+        utilities: List[List[int]] = [
+            pbfunc.votes_to_utility(
+                vote_type,
+                project_lookup,
+                [int(vote) for vote in self._voters[vid]['vote'].split(',')],
+                [int(point) for point in self._voters[vid]['points'].split(',')]
+                if 'points' in self._voters[vid] else []
+            )
+            for vid in self._voters.keys()
+        ]
+
+        # Predefined Greedy Allocation:
+        values: List[int] = pbfunc.aggregate_utilitarian(num_projects, utilities)
+        predefined: List[int] = [
+            int(pid) for pid in self._projects
+            if 'selected' in self._projects[pid] and
+               self._projects[pid]['selected'] == '1'
+        ]
         predefined_value: int = sum(values[project_lookup[pid]] for pid in predefined)
+        self._predefined = PBResult(predefined, predefined_value, 0.0, -1, -1)
 
-        self._predefined: PBResult = PBResult(
-            allocation=predefined,
-            value=predefined_value,
-            runtime=0.0,
-            algorithm=-1,
-            approximate=-1
-        )
-
-        self._problem = PBProblem(
+        return PBProblem(
             num_projects=num_projects,
             num_voters=num_voters,
             budget=budget,
@@ -102,7 +109,6 @@ class PBParser:
             projects=projects,
             voters=voters
         )
-        return self._problem
 
-    def predefined(self):
+    def predefined(self) -> PBResult:
         return self._predefined
