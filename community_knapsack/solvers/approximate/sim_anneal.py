@@ -85,7 +85,7 @@ def __simulated_annealing(
 ) -> Tuple[List[int], int]:
     """
     An internal function to run the simulated annealing process given the weights and values of the problem,
-    and initial allocation, a validity function and optional simulated annealing parameters.
+    and initial allocation, a validity function and some simulated annealing parameters.
 
     :param weights: A list of weights for each item (1D), or a list of weights for each capacity for each item (2D).
     :param values: A list of values for each item, i.e., values[i] is the value for item i.
