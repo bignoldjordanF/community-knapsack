@@ -44,6 +44,10 @@ class PBAlgorithm(Enum):
     """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
     value-to-weight ratio."""
 
+    ILP_SOLVER = 9
+    """A branch-and-cut integer programming solver using the PuLP library. This is typically fast, although
+    it can be slow for larger instances."""
+
     def is_approximate(self) -> bool:
         """
         :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
@@ -143,6 +147,9 @@ class PBProblem:
         elif algorithm == PBAlgorithm.RATIO_GREEDY:
             allocation = solvers.ratio_greedy(self.budget, self.costs, values)
 
+        elif algorithm == PBAlgorithm.ILP_SOLVER:
+            allocation = solvers.integer_programming(self.budget, self.costs, values)
+
         end_time: float = default_timer()
 
         return PBResult(
@@ -189,6 +196,10 @@ class PBMultiAlgorithm(Enum):
     RATIO_GREEDY = 8
     """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
     value-to-weight ratio, where weight is the sum of all weights for each item."""
+
+    ILP_SOLVER = 9
+    """A branch-and-cut integer programming solver using the PuLP library. This is typically fast, although
+    it can be slow for larger instances."""
 
     def is_approximate(self) -> bool:
         """
@@ -263,6 +274,9 @@ class PBMultiProblem(PBProblem):
 
         elif algorithm == PBMultiAlgorithm.RATIO_GREEDY:
             allocation = solvers.multi_ratio_greedy(self.budget, self.costs, values)
+
+        elif algorithm == PBMultiAlgorithm.ILP_SOLVER:
+            allocation = solvers.multi_integer_programming(self.budget, self.costs, values)
 
         end_time: float = default_timer()
 
