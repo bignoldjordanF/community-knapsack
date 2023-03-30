@@ -4,3 +4,4 @@ from .dyn_prog import dynamic_programming, \
     dynamic_programming_min_weight, \
     multi_dynamic_programming
 from .branch_bound import branch_and_bound, multi_branch_and_bound
+from .ilp import integer_programming, multi_integer_programming
