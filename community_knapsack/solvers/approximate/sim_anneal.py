@@ -1,7 +1,10 @@
-from numpy import exp
+import numpy as np
 from typing import List, Tuple, Union, Callable
 from dataclasses import dataclass
 import random
+
+
+np.seterr(over='ignore')
 
 
 @dataclass
@@ -132,7 +135,7 @@ def __simulated_annealing(
             # Accept neighbouring allocations with a lower value
             # with some probability, defined p=e^{-dV/T}:
             q = random.uniform(0, 1)
-            p = exp(-delta_value / current_temperature)
+            p = np.exp(-delta_value / current_temperature)
             if q < p:
                 current = neighbour
 
