@@ -3,11 +3,14 @@ from community_knapsack import *
 
 if __name__ == '__main__':
     # Parse a locally stored .pb file from Pabulib.org:
-    parser: PBParser = PBParser('resources/pabulib/poland_warszawa_2023_ochota.pb')
+    parser: PBParser = PBParser('resources/pabulib/poland_gdansk_2020_przymorze-wielkie.pb')
     problem: PBProblem = parser.problem()
 
-    # Obtain the predefined allocation (if any):
-    predefined: PBResult = parser.predefined_result()
+    # Find the allocation that the democracy used:
+    predefined: PBResult = parser.predefined()
+
+    print(predefined)
+    print()
 
     # Solve using e.g. greedy, genetic, simulated annealing:
     greedy: PBResult = problem.solve(PBAlgorithm.GREEDY)

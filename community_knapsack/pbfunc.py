@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Dict
 
 
 def aggregate_utilitarian(num_projects: int, utilities: List[List[int]]) -> List[int]:
@@ -26,3 +26,38 @@ def resolve_project_ids(projects: List[int], allocation: List[int]) -> List[int]
     :return: An allocation (list) of project ids rather than project indexes.
     """
     return [projects[idx] for _, idx in enumerate(allocation)]
+
+
+def ordinal_to_utility(lookup: Dict[int, int], preferences: List[int]):
+    elicited: int = len(lookup) - len(preferences)
+    votes: int = elicited
+    utilities: List[int] = [0] * len(lookup)
+    for preference in reversed(preferences):
+        utilities[lookup[preference]] = votes
+        votes += 1
+    return utilities
+
+
+def votes_to_utility(vote_type: str, lookup: Dict[int, int], votes: List[int], points: List[int]):
+    """
+
+    :param vote_type:
+    :param lookup:
+    :param votes:
+    :param points:
+    :return:
+    """
+    utilities: List[int] = [0] * len(lookup)
+    if vote_type == 'approval':
+        for vote in votes:
+            utilities[lookup[vote]] = 1
+        return utilities
+
+    if vote_type in ('cumulative', 'scoring') and len(points) == len(votes):
+        for pid, vote in enumerate(votes):
+            utilities[lookup[vote]] = points[pid]
+
+    if vote_type == 'ordinal':
+        return ordinal_to_utility(lookup, votes)
+
+    return utilities
