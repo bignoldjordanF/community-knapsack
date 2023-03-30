@@ -47,7 +47,7 @@ class PBGenerator:
         return PBProblem(projects, voters, budget, costs, utilities)
 
 
-class PBMultiGenerator(PBGenerator):
+class PBMultiGenerator:
     def __init__(
             self,
             num_projects: Union[Tuple[int, int], int] = (10, 50),
@@ -56,12 +56,20 @@ class PBMultiGenerator(PBGenerator):
             cost_bound: Tuple[Tuple[int, int], ...] = ((50_000, 500_000), (100, 500)),
             utility_bound: Union[Tuple[int, int]] = (0, 1)
     ):
-        super().__init__(num_projects, num_voters, 0, (0, 0), utility_bound)
+        self._min_projects: int = _get_min(num_projects)
+        self._max_projects: int = _get_max(num_projects)
+
+        self._min_voters: int = _get_min(num_voters)
+        self._max_voters: int = _get_max(num_voters)
+
         self._min_budget: List[int] = [_get_min(bound) for bound in budget_bound]
         self._max_budget: List[int] = [_get_max(bound) for bound in budget_bound]
 
         self._min_cost: List[int] = [_get_min(bound) for bound in cost_bound]
         self._max_cost: List[int] = [_get_max(bound) for bound in cost_bound]
+
+        self._min_utility: int = _get_min(utility_bound)
+        self._max_utility: int = _get_max(utility_bound)
 
     def generate(self) -> PBMultiProblem:
         projects: int = random.randint(self._min_projects, self._max_projects)

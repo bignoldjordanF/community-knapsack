@@ -3,7 +3,7 @@ from . import solvers
 
 from collections import namedtuple
 from timeit import default_timer
-from typing import List
+from typing import List, Sequence
 from enum import Enum
 
 
@@ -214,7 +214,7 @@ class PBMultiAlgorithm(Enum):
         )
 
 
-class PBMultiProblem(PBProblem):
+class PBMultiProblem:
     def __init__(self, num_projects: int, num_voters: int, budget: List[int], costs: List[List[int]],
                  utilities: List[List[int]], projects: List[int] = None, voters: List[int] = None):
         """
@@ -230,9 +230,13 @@ class PBMultiProblem(PBProblem):
         :param projects: An optional list of custom project ids, defaulting to 1,...,num_projects otherwise.
         :param voters: An optional list of custom voter ids, defaulting to 1,...,num_voters otherwise.
         """
-        super().__init__(num_projects, num_voters, 0, [], utilities, projects, voters)
+        self.num_projects: int = num_projects
+        self.num_voters: int = num_voters
         self.budget: List[int] = budget
         self.costs: List[List[int]] = costs
+        self.utilities: List[List[int]] = utilities
+        self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
+        self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
 
     def solve(self, algorithm: PBMultiAlgorithm) -> PBResult:
         """
