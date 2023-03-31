@@ -275,7 +275,10 @@ class PBMultiProblem:
             allocation = solvers.multi_memoization(self.budget, self.costs, values)
 
         elif algorithm == PBMultiAlgorithm.DYNAMIC_PROGRAMMING:
-            allocation = solvers.multi_dynamic_programming(self.budget, self.costs, values)
+            # The iterative dynamic programming algorithm is just too slow, even for
+            # small instances.
+            # allocation = solvers.multi_dynamic_programming(self.budget, self.costs, values)
+            allocation = solvers.multi_memoization(self.budget, self.costs, values)
 
         elif algorithm == PBMultiAlgorithm.BRANCH_AND_BOUND:
             allocation = solvers.multi_branch_and_bound(self.budget, self.costs, values)
