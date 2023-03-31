@@ -1,6 +1,7 @@
 from . import pbfunc
 from . import solvers
 
+from abc import ABC, abstractmethod
 from collections import namedtuple
 from timeit import default_timer
 from typing import List
@@ -12,7 +13,14 @@ PBResult = namedtuple('PBResult', ('allocation', 'value', 'runtime', 'algorithm'
 a list of project ids, its overall value and the runtime in milliseconds."""
 
 
-class PBAlgorithm(Enum):
+class _PBBaseAlgorithm(Enum):
+
+    @abstractmethod
+    def is_approximate(self) -> bool:
+        pass
+
+
+class PBAlgorithm(_PBBaseAlgorithm):
     BRUTE_FORCE = 0
     """A very slow but exact algorithm that enumerates every possible allocation and returns the best (optimal) one.
     This is likely too slow and is very rarely applicable."""
@@ -66,7 +74,97 @@ class PBAlgorithm(Enum):
         )
 
 
-class PBProblem:
+class PBMultiAlgorithm(_PBBaseAlgorithm):
+    BRUTE_FORCE = 0
+    """A very slow but exact algorithm that enumerates every possible allocation and returns the best (optimal) one.
+    This is likely too slow and is very rarely applicable."""
+
+    MEMOIZATION = 1
+    """A relatively slow exact algorithm that improves upon the brute force algorithm for a faster result."""
+
+    DYNAMIC_PROGRAMMING = 2
+    """An exact algorithm that improves upon the brute force algorithm, but is still extremely slow given larger
+    problem sizes, especially with multiple dimensions. This is very rarely applicable."""
+
+    BRANCH_AND_BOUND = 3
+    """An approximation algorithm that begins to enumerate every possible allocation but prunes 
+    certain branches for a faster result. The run-time is exponential (slow) but can be much 
+    faster depending on the problem."""
+
+    SIMULATED_ANNEALING = 4
+    """A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
+    approximations of the optimal allocation."""
+
+    GENETIC_ALGORITHM = 5
+    """A relatively fast algorithm derived from the process of evolution which provides approximations of the
+    optimal solution."""
+
+    GREEDY = 7
+    """A fast approximation algorithm that picks projects by their overall value. This is commonly used
+    in real-world budget allocations."""
+
+    RATIO_GREEDY = 8
+    """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
+    value-to-weight ratio, where weight is the sum of all weights for each item."""
+
+    ILP_SOLVER = 9
+    """A branch-and-cut integer programming solver using the PuLP library. This is typically fast, although
+    it can be slow for larger instances."""
+
+    def is_approximate(self) -> bool:
+        """
+        :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
+        """
+        return self in (
+            PBMultiAlgorithm.GREEDY,
+            PBMultiAlgorithm.RATIO_GREEDY,
+            PBMultiAlgorithm.BRANCH_AND_BOUND,
+            PBMultiAlgorithm.SIMULATED_ANNEALING,
+            PBMultiAlgorithm.GENETIC_ALGORITHM
+        )
+
+
+class _PBBaseProblem(ABC):
+    def __init__(
+            self,
+            num_projects: int,
+            num_voters: int,
+            utilities: List[List[int]],
+            projects: List[int] = None,
+            voters: List[int] = None,
+    ):
+        """
+        Instantiates a single-dimensional (one constraint) participatory budgeting problem.
+
+        :param num_projects: The number of projects in the instance.
+        :param num_voters: The number of voters in the instance.
+        :param utilities: A list of lists of utilities for each voter over the projects, i.e., utilities[v][p] is the
+        utility voter v derives from project p.
+        :param projects: An optional list of custom project ids, defaulting to 0,...,num_projects-1 otherwise.
+        :param voters: An optional list of custom voter ids, defaulting to 0,...,num_voters-1 otherwise.
+        """
+        self.num_projects: int = num_projects
+        self.num_voters: int = num_voters
+        self.utilities: List[List[int]] = utilities
+        self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
+        self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
+
+    def __str__(self) -> str:
+        """
+        :return: A string representing the problem data.
+        """
+        return str(self.__dict__)
+
+    @abstractmethod
+    def solve(self, algorithm: _PBBaseAlgorithm) -> PBResult:
+        pass
+
+    @abstractmethod
+    def approximate(self) -> PBResult:
+        pass
+
+
+class PBProblem(_PBBaseProblem):
     def __init__(
             self,
             num_projects: int,
@@ -89,19 +187,9 @@ class PBProblem:
         :param projects: An optional list of custom project ids, defaulting to 0,...,num_projects-1 otherwise.
         :param voters: An optional list of custom voter ids, defaulting to 0,...,num_voters-1 otherwise.
         """
-        self.num_projects: int = num_projects
-        self.num_voters: int = num_voters
+        super().__init__(num_projects, num_voters, utilities, projects, voters)
         self.budget: int = budget
         self.costs: List[int] = costs
-        self.utilities: List[List[int]] = utilities
-        self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
-        self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
-
-    def __str__(self) -> str:
-        """
-        :return: A string representing the problem data.
-        """
-        return str(self.__dict__)
 
     def solve(self, algorithm: PBAlgorithm) -> PBResult:
         """
@@ -171,57 +259,7 @@ class PBProblem:
         return max([ratio_greedy, fptas, simulated_annealing, genetic_algorithm], key=lambda r: r.value)
 
 
-class PBMultiAlgorithm(Enum):
-    BRUTE_FORCE = 0
-    """A very slow but exact algorithm that enumerates every possible allocation and returns the best (optimal) one.
-    This is likely too slow and is very rarely applicable."""
-
-    MEMOIZATION = 1
-    """A relatively slow exact algorithm that improves upon the brute force algorithm for a faster result."""
-
-    DYNAMIC_PROGRAMMING = 2
-    """An exact algorithm that improves upon the brute force algorithm, but is still extremely slow given larger
-    problem sizes, especially with multiple dimensions. This is very rarely applicable."""
-
-    BRANCH_AND_BOUND = 3
-    """An approximation algorithm that begins to enumerate every possible allocation but prunes 
-    certain branches for a faster result. The run-time is exponential (slow) but can be much 
-    faster depending on the problem."""
-
-    SIMULATED_ANNEALING = 4
-    """A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
-    approximations of the optimal allocation."""
-
-    GENETIC_ALGORITHM = 5
-    """A relatively fast algorithm derived from the process of evolution which provides approximations of the
-    optimal solution."""
-
-    GREEDY = 7
-    """A fast approximation algorithm that picks projects by their overall value. This is commonly used
-    in real-world budget allocations."""
-
-    RATIO_GREEDY = 8
-    """A fast and typically better (vs. greedy) approximation algorithm that picks projects by their overall
-    value-to-weight ratio, where weight is the sum of all weights for each item."""
-
-    ILP_SOLVER = 9
-    """A branch-and-cut integer programming solver using the PuLP library. This is typically fast, although
-    it can be slow for larger instances."""
-
-    def is_approximate(self) -> bool:
-        """
-        :return: True if the algorithm is an approximation scheme, or false for exact algorithms.
-        """
-        return self in (
-            PBMultiAlgorithm.GREEDY,
-            PBMultiAlgorithm.RATIO_GREEDY,
-            PBMultiAlgorithm.BRANCH_AND_BOUND,
-            PBMultiAlgorithm.SIMULATED_ANNEALING,
-            PBMultiAlgorithm.GENETIC_ALGORITHM
-        )
-
-
-class PBMultiProblem:
+class PBMultiProblem(_PBBaseProblem):
     def __init__(self, num_projects: int, num_voters: int, budget: List[int], costs: List[List[int]],
                  utilities: List[List[int]], projects: List[int] = None, voters: List[int] = None):
         """
@@ -237,19 +275,9 @@ class PBMultiProblem:
         :param projects: An optional list of custom project ids, defaulting to 1,...,num_projects otherwise.
         :param voters: An optional list of custom voter ids, defaulting to 1,...,num_voters otherwise.
         """
-        self.num_projects: int = num_projects
-        self.num_voters: int = num_voters
+        super().__init__(num_projects, num_voters, utilities, projects, voters)
         self.budget: List[int] = budget
         self.costs: List[List[int]] = costs
-        self.utilities: List[List[int]] = utilities
-        self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
-        self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
-
-    def __str__(self) -> str:
-        """
-        :return: A string representing the problem data.
-        """
-        return str(self.__dict__)
 
     def solve(self, algorithm: PBMultiAlgorithm) -> PBResult:
         """

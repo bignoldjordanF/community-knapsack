@@ -29,14 +29,11 @@ def single_example():
     print(fptas)
     print()
 
-    print(problem.approximate())
-    print()
-
 
 def multi_example():
-    # Randomly generate a d-dimensional example
+    # Randomly generate a two-dimensional example
     # with between 10-20 projects and 10-100 voters.
-    # Each budget must be between 500-2000 and each
+    # Both budgets must be between 500-2000 and each
     # cost between 100-500 for the first budget and
     # 50-400 for the second budget. Approval voting
     # is used by voters:
