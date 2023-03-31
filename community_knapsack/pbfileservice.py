@@ -8,7 +8,8 @@ class PBParser:
     def __init__(self, file_path: str):
         """
         Instantiates a PBParser object, but does not parse the file. A
-        PBProblem instance can be extracted through the problem() method.
+        PBProblem or PBMultiProblem instance can be extracted through
+        the problem() and multi_problem() methods respectively.
 
         :param file_path: The path to the .pb file.
         """
@@ -123,8 +124,10 @@ class PBParser:
 
         :return: A PBProblem object containing the PB instance for solving.
         """
-        multi_problem: PBMultiProblem = self.multi_problem()
 
+        # Parse the .pb file as a multi-problem and reduce into
+        # a one-dimensional problem:
+        multi_problem: PBMultiProblem = self.multi_problem()
         return PBProblem(
             num_projects=multi_problem.num_projects,
             num_voters=multi_problem.num_voters,
@@ -136,29 +139,52 @@ class PBParser:
         )
 
     def predefined(self) -> PBResult:
+        """
+        Obtain the allocation predefined in the .pb file, if any, as a PBResult object.
+        :return: A PBResult object possibly containing an allocation predefined in the .pb file.
+        """
         return self._predefined
 
 
 class PBWriter:
     def __init__(self, file_path: str):
+        """
+        Instantiates a PBWriter object, but does not write the instance.
+        The file is written by passing a PBProblem or PBMultiProblem
+        object to the write method.
+
+        :param file_path: The path to the .pb file.
+        """
         self._file_path: str = file_path
 
     def write(self, problem: Union[PBProblem, PBMultiProblem]):
+        """
+        Writes a PBProblem or PBMultiProblem object to a .pb file to
+        store the instance data.
+
+        :param problem: A PBProblem or PBMultiProblem object to be written.
+s        """
         # Prepare Meta
         meta_header: List[str] = ['key', 'value']
         num_projects: List[str] = ['num_projects', str(problem.num_projects)]
         num_voters: List[str] = ['num_votes', str(problem.num_voters)]
 
+        # The budget is a comma-separated string of budgets
+        # for a PBMultiProblem:
         if isinstance(problem, PBProblem):
             budget: List[str] = ['budget', str(problem.budget)]
         else:
             budget: List[str] = ['budget', ','.join([str(b) for b in problem.budget])]
 
+        # Assume scoring in all cases to simplify writing and parsing:
         vote_type: List[str] = ['vote_type', 'scoring']
 
         # Prepare Projects
         projects_header: List[str] = ['project_id', 'cost']
         projects: List[List[str]] = []
+
+        # The costs are a comma-separated string of costs
+        # in each dimension for a PBMultiProblem:
         for idx, pid in enumerate(problem.projects):
             if isinstance(problem, PBProblem):
                 project: List[str] = [str(pid), str(problem.costs[idx])]
@@ -169,6 +195,8 @@ class PBWriter:
         # Prepare Voters
         voters_header: List[str] = ['voter_id', 'vote', 'points']
         voters: List[List[str]] = []
+
+        # Store the utilities list as a votes and points list:
         for idx, vid in enumerate(problem.voters):
             votes: List[str] = [
                 str(problem.projects[p_idx])
