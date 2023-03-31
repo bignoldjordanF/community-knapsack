@@ -1,7 +1,7 @@
 from . import pbfunc
 from . import solvers
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections import namedtuple
 from timeit import default_timer
 from typing import List
@@ -124,7 +124,7 @@ class PBMultiAlgorithm(_PBBaseAlgorithm):
         )
 
 
-class _PBBaseProblem(ABC):
+class _PBBaseProblem:
     def __init__(
             self,
             num_projects: int,
