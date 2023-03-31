@@ -3,8 +3,13 @@ from . import solvers
 
 from collections import namedtuple
 from timeit import default_timer
-from typing import List, Sequence
+from typing import List
 from enum import Enum
+
+
+PBResult = namedtuple('PBResult', ('allocation', 'value', 'runtime', 'algorithm', 'approximate'))
+"""A named-tuple for allocation results, containing the allocation as
+a list of project ids, its overall value and the runtime in milliseconds."""
 
 
 class PBAlgorithm(Enum):
@@ -59,11 +64,6 @@ class PBAlgorithm(Enum):
             PBAlgorithm.SIMULATED_ANNEALING,
             PBAlgorithm.GENETIC_ALGORITHM
         )
-
-
-PBResult = namedtuple('PBResult', ('allocation', 'value', 'runtime', 'algorithm', 'approximate'))
-"""A named-tuple for allocation results, containing the allocation as
-a list of project ids, its overall value and the runtime in milliseconds."""
 
 
 class PBProblem:

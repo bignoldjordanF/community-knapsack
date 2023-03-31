@@ -1,5 +1,5 @@
 import csv
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from .pbproblem import PBProblem, PBMultiProblem, PBResult
 from . import pbfunc
 
@@ -47,15 +47,15 @@ class PBParser:
                     for it, key in enumerate(header[1:]):
                         self._voters[row[0]][key.strip()] = row[it + 1].strip()
 
-    def problem(self) -> PBProblem:
+    def multi_problem(self) -> PBMultiProblem:
         """
-        Parses a .pb file and returns the instance as a PBProblem object for solving.
+        Parses a .pb file and returns the instance as a PBMultiProblem object for solving.
         The votes are represented as utility values in the returned problem, where
         utilities[v][p] is the utility voter v derives from project p.
 
         Reference: http://pabulib.org/code
 
-        :return: A PBProblem object containing the PB instance for solving.
+        :return: A PBMultiProblem object containing the PB instance for solving.
         """
         if not self._meta:
             self._parse()
@@ -63,12 +63,15 @@ class PBParser:
         # Problem Metadata
         num_projects: int = len(self._projects)
         num_voters: int = len(self._voters)
-        budget: int = int(self._meta['budget'])
+        budget: List[int] = [int(b) for b in self._meta['budget'].split(',')]
         vote_type: str = self._meta['vote_type']
 
         # Project Data
         projects: List[int] = [int(pid) for pid in self._projects.keys()]
-        costs: List[int] = [int(self._projects[pid]['cost']) for pid in self._projects.keys()]
+        costs: List[List[int]] = [
+            [int(cost) for cost in self._projects[pid]['cost'].split(',')]
+            for pid in self._projects.keys()
+        ]
 
         # Reverse Project Lookup (pid -> projects[idx])
         project_lookup: Dict[int, int] = {pid: idx for idx, pid in enumerate(projects)}
@@ -100,7 +103,7 @@ class PBParser:
         predefined_value: int = sum(values[project_lookup[pid]] for pid in predefined)
         self._predefined = PBResult(predefined, predefined_value, 0.0, -1, -1)
 
-        return PBProblem(
+        return PBMultiProblem(
             num_projects=num_projects,
             num_voters=num_voters,
             budget=budget,
@@ -108,6 +111,28 @@ class PBParser:
             utilities=utilities,
             projects=projects,
             voters=voters
+        )
+
+    def problem(self) -> PBProblem:
+        """
+        Parses a .pb file and returns the instance as a PBProblem object for solving.
+        The votes are represented as utility values in the returned problem, where
+        utilities[v][p] is the utility voter v derives from project p.
+
+        Reference: http://pabulib.org/code
+
+        :return: A PBProblem object containing the PB instance for solving.
+        """
+        multi_problem: PBMultiProblem = self.multi_problem()
+
+        return PBProblem(
+            num_projects=multi_problem.num_projects,
+            num_voters=multi_problem.num_voters,
+            budget=multi_problem.budget[0],
+            costs=[cost[0] for cost in multi_problem.costs],
+            utilities=multi_problem.utilities,
+            projects=multi_problem.projects,
+            voters=multi_problem.voters
         )
 
     def predefined(self) -> PBResult:
@@ -118,26 +143,38 @@ class PBWriter:
     def __init__(self, file_path: str):
         self._file_path: str = file_path
 
-    def write(self, problem: PBProblem):
+    def write(self, problem: Union[PBProblem, PBMultiProblem]):
         # Prepare Meta
         meta_header: List[str] = ['key', 'value']
         num_projects: List[str] = ['num_projects', str(problem.num_projects)]
         num_voters: List[str] = ['num_votes', str(problem.num_voters)]
-        budget: List[str] = ['budget', str(problem.budget)]
+
+        if isinstance(problem, PBProblem):
+            budget: List[str] = ['budget', str(problem.budget)]
+        else:
+            budget: List[str] = ['budget', ','.join([str(b) for b in problem.budget])]
+
         vote_type: List[str] = ['vote_type', 'scoring']
 
         # Prepare Projects
         projects_header: List[str] = ['project_id', 'cost']
         projects: List[List[str]] = []
         for idx, pid in enumerate(problem.projects):
-            project: List[str] = [str(pid), str(problem.costs[idx])]
+            if isinstance(problem, PBProblem):
+                project: List[str] = [str(pid), str(problem.costs[idx])]
+            else:
+                project: List[str] = [str(pid), ','.join([str(dim[idx]) for dim in problem.costs])]
             projects.append(project)
 
         # Prepare Voters
         voters_header: List[str] = ['voter_id', 'vote', 'points']
         voters: List[List[str]] = []
         for idx, vid in enumerate(problem.voters):
-            votes: List[str] = [str(problem.projects[p_idx]) for p_idx, vote in enumerate(problem.utilities[idx]) if vote > 0]
+            votes: List[str] = [
+                str(problem.projects[p_idx])
+                for p_idx, vote in enumerate(problem.utilities[idx])
+                if vote > 0
+            ]
             points: List[str] = [str(vote) for vote in problem.utilities[idx] if vote > 0]
             voter: List[str] = [str(vid), ','.join(votes), ','.join(points)]
             voters.append(voter)
