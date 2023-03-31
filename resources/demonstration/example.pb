@@ -2,7 +2,7 @@ META
 key;value
 num_projects;10
 num_votes;10
-budget;1000
+budget;10000
 vote_type;approval
 PROJECTS
 project_id;cost
