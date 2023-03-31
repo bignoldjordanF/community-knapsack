@@ -163,7 +163,7 @@ class PBWriter:
         store the instance data.
 
         :param problem: A PBProblem or PBMultiProblem object to be written.
-s        """
+        """
         # Prepare Meta
         meta_header: List[str] = ['key', 'value']
         num_projects: List[str] = ['num_projects', str(problem.num_projects)]
