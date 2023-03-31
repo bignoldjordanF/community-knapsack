@@ -1,5 +1,5 @@
 import csv
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 from .pbproblem import PBProblem, PBResult
 from . import pbfunc
 
@@ -75,7 +75,7 @@ class PBParser:
 
         # Voter Data
         voters: List[int] = [int(vid) for vid in self._voters.keys()]
-        voters_lookup: Dict[int, int] = {vid: idx for idx, vid in enumerate(voters)}
+        # voters_lookup: Dict[int, int] = {vid: idx for idx, vid in enumerate(voters)}
 
         # The utility values are derived from the votes, which may
         # be approval, cumulative, scoring or ordinal voting:
