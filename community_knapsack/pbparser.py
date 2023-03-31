@@ -1,6 +1,6 @@
 import csv
 from typing import Dict, List, Optional
-from .pbproblem import PBProblem, PBResult
+from .pbproblem import PBProblem, PBMultiProblem, PBResult
 from . import pbfunc
 
 
@@ -112,3 +112,55 @@ class PBParser:
 
     def predefined(self) -> PBResult:
         return self._predefined
+
+
+class PBWriter:
+    def __init__(self, file_path: str):
+        self._file_path: str = file_path
+
+    def write(self, problem: PBProblem):
+        # Prepare Meta
+        meta_header: List[str] = ['key', 'value']
+        num_projects: List[str] = ['num_projects', str(problem.num_projects)]
+        num_voters: List[str] = ['num_votes', str(problem.num_voters)]
+        budget: List[str] = ['budget', str(problem.budget)]
+        vote_type: List[str] = ['vote_type', 'scoring']
+
+        # Prepare Projects
+        projects_header: List[str] = ['project_id', 'cost']
+        projects: List[List[str]] = []
+        for idx, pid in enumerate(problem.projects):
+            project: List[str] = [str(pid), str(problem.costs[idx])]
+            projects.append(project)
+
+        # Prepare Voters
+        voters_header: List[str] = ['voter_id', 'vote', 'points']
+        voters: List[List[str]] = []
+        for idx, vid in enumerate(problem.voters):
+            votes: List[str] = [str(problem.projects[p_idx]) for p_idx, vote in enumerate(problem.utilities[idx]) if vote > 0]
+            points: List[str] = [str(vote) for vote in problem.utilities[idx] if vote > 0]
+            voter: List[str] = [str(vid), ','.join(votes), ','.join(points)]
+            voters.append(voter)
+
+        with open(self._file_path, 'w+', encoding='utf-8') as csv_file:
+            writer: csv.writer = csv.writer(csv_file, delimiter=';')
+
+            # Write Metadata
+            writer.writerow(['META'])
+            writer.writerow(meta_header)
+            writer.writerow(num_projects)
+            writer.writerow(num_voters)
+            writer.writerow(budget)
+            writer.writerow(vote_type)
+
+            # Write Projects
+            writer.writerow(['PROJECTS'])
+            writer.writerow(projects_header)
+            for row in projects:
+                writer.writerow(row)
+
+            # Write Voters
+            writer.writerow(['VOTES'])
+            writer.writerow(voters_header)
+            for row in voters:
+                writer.writerow(row)
