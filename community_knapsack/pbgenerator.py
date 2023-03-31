@@ -1,4 +1,4 @@
-from .pbproblem import PBProblem, PBMultiProblem
+from .pbproblem import PBProblem, PBMultiProblem, _PBBaseProblem
 from typing import Union, Tuple, List
 import random
 from abc import ABC, abstractmethod
@@ -18,7 +18,7 @@ class _PBBaseGenerator(ABC):
             self,
             num_projects: Union[Tuple[int, int], int] = (10, 50),
             num_voters: Union[Tuple[int, int], int] = (10, 100),
-            utility_bound: Union[Tuple[int, int]] = (0, 1)
+            utility_bound: Union[Tuple[int, int]] = (0, 1),
     ):
         self._min_projects: int = _get_min(num_projects)
         self._max_projects: int = _get_max(num_projects)
@@ -30,7 +30,7 @@ class _PBBaseGenerator(ABC):
         self._max_utility: int = _get_max(utility_bound)
 
     @abstractmethod
-    def generate(self):
+    def generate(self) -> _PBBaseProblem:
         pass
 
 

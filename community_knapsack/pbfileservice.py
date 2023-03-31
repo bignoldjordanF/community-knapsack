@@ -1,5 +1,5 @@
 import csv
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 from .pbproblem import PBProblem, PBMultiProblem, PBResult
 from . import pbfunc
 
