@@ -1,7 +1,6 @@
 from .pbproblem import PBProblem, PBMultiProblem, _PBBaseProblem
 from typing import Union, Tuple, List
 import random
-from abc import ABC, abstractmethod
 
 
 def _get_min(pair: Union[Tuple[int, int], int]):
@@ -14,8 +13,7 @@ def _get_max(pair: Union[Tuple[int, int], int]):
     return pair[1] if isinstance(pair, Tuple) else pair
 
 
-class _PBBaseGenerator(ABC):
-    @abstractmethod
+class _PBBaseGenerator:
     def __init__(
             self,
             num_projects: Union[Tuple[int, int], int] = (10, 50),
@@ -31,7 +29,6 @@ class _PBBaseGenerator(ABC):
         self._min_utility: int = _get_min(utility_bound)
         self._max_utility: int = _get_max(utility_bound)
 
-    @abstractmethod
     def generate(self) -> _PBBaseProblem:
         projects: int = random.randint(self._min_projects, self._max_projects)
         voters: int = random.randint(self._min_voters, self._max_voters)

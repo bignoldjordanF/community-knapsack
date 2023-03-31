@@ -1,7 +1,6 @@
 from . import pbfunc
 from . import solvers
 
-from abc import abstractmethod
 from collections import namedtuple
 from timeit import default_timer
 from typing import List
@@ -155,11 +154,9 @@ class _PBBaseProblem:
         """
         return str(self.__dict__)
 
-    @abstractmethod
     def solve(self, algorithm: _PBBaseAlgorithm) -> PBResult:
         pass
 
-    @abstractmethod
     def approximate(self) -> PBResult:
         pass
 
