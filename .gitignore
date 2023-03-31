@@ -284,4 +284,4 @@ poetry.toml
 pyrightconfig.json
 
 # Ignore .pb files
-*.pb
+pabulib/*.pb

@@ -2,9 +2,11 @@ from community_knapsack import *
 
 
 if __name__ == '__main__':
-    # Parse a locally stored .pb file from Pabulib.org:
-    parser: PBParser = PBParser('resources/pabulib/poland_krakow_2018_.pb')
+    # Parse a locally stored .pb file:
+    parser: PBParser = PBParser('resources/generated/example.pb')
     problem: PBProblem = parser.problem()
+
+    problem.approximate()
 
     # Find the allocation that the democracy used:
     predefined: PBResult = parser.predefined()
