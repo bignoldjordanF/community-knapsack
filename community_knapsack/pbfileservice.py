@@ -17,7 +17,7 @@ class PBParser:
         self._meta: Dict[str, str] = {}
         self._projects: Dict[str, Dict[str, str]] = {}
         self._voters: Dict[str, Dict[str, str]] = {}
-        self._predefined: Optional[PBResult] = PBResult([], 0, 0.0, -1, -1)
+        self._predefined: PBResult = PBResult([], 0, 0.0, -1, -1)
 
     def _parse(self) -> None:
         """
