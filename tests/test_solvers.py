@@ -3,7 +3,7 @@ from community_knapsack import *
 import pytest
 
 
-single_test_data = [(PBParser('resources/demonstration/example.pb').problem(), [1, 2, 4], 7)]
+single_test_data = [(PBParser('resources/testing/example.pb').problem(), [1, 2, 4], 7)]
 single_exact_algorithms = [
     PBAlgorithm.BRUTE_FORCE,
     PBAlgorithm.MEMOIZATION,
@@ -13,7 +13,7 @@ single_exact_algorithms = [
 ]
 
 
-multi_test_data = [(PBParser('resources/demonstration/multi_example.pb').multi_problem(), [1, 2], 5)]
+multi_test_data = [(PBParser('resources/testing/multi_example.pb').multi_problem(), [1, 2], 5)]
 multi_exact_algorithms = [
     PBMultiAlgorithm.BRUTE_FORCE,
     # PBMultiAlgorithm.DYNAMIC_PROGRAMMING

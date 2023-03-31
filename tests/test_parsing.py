@@ -2,11 +2,11 @@ from community_knapsack import *
 import os
 
 
-single_file_path: str = 'resources/demonstration/example.pb'
-single_test_file_path: str = 'resources/demonstration/example_test.pb'
+single_file_path: str = 'resources/testing/example.pb'
+single_test_file_path: str = 'resources/testing/example_test.pb'
 
-multi_file_path: str = 'resources/demonstration/multi_example.pb'
-multi_test_file_path: str = 'resources/demonstration/multi_example_test.pb'
+multi_file_path: str = 'resources/testing/multi_example.pb'
+multi_test_file_path: str = 'resources/testing/multi_example_test.pb'
 
 
 def verify_single_example(problem: PBProblem):
