@@ -238,6 +238,12 @@ class PBMultiProblem:
         self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
         self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
 
+    def __str__(self) -> str:
+        """
+        :return: A string representing the problem data.
+        """
+        return str(self.__dict__)
+
     def solve(self, algorithm: PBMultiAlgorithm) -> PBResult:
         """
         Reduces a multidimensional participatory budgeting problem to the multidimensional knapsack problem

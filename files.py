@@ -1,31 +1,21 @@
-from community_knapsack import PBMultiProblem, PBMultiAlgorithm, PBWriter, PBParser
+from community_knapsack import PBMultiProblem, PBMultiAlgorithm, PBWriter, PBParser, PBMultiGenerator
 
 
 if __name__ == '__main__':
-    problem: PBMultiProblem = PBMultiProblem(
-        num_projects=5,
-        num_voters=5,
-        budget=[1000, 250, 300],
-        costs=[
-            [200, 650, 400, 700, 400],
-            [40, 100, 25, 65, 95],
-            [60, 90, 120, 150, 130]
-        ],
-        utilities=[
-            [1, 0, 1, 1, 0],
-            [0, 1, 1, 0, 1],
-            [1, 1, 1, 5, 0],
-            [0, 0, 0, 1, 0],
-            [0, 1, 1, 0, 1],
-        ]
+    generator: PBMultiGenerator = PBMultiGenerator(
+        num_projects=60,
+        num_voters=1000,
+        budget_bound=((500_000, 2_000_000), (200_000, 1_000_000)),
+        cost_bound=((50_000, 100_000), (25_000, 75_000)),
+        utility_bound=(0, 5)
     )
-    x = problem.solve(PBMultiAlgorithm.MEMOIZATION)
+    problem: PBMultiProblem = generator.generate()
+    x = problem.solve(PBMultiAlgorithm.ILP_SOLVER)
     print(x)
 
     file_path: str = 'resources/generated/example.pb'
     PBWriter(file_path).write(problem)
-
     problem2: PBMultiProblem = PBParser(file_path).multi_problem()
-    y = problem.solve(PBMultiAlgorithm.MEMOIZATION)
-    print(y)
 
+    y = problem2.solve(PBMultiAlgorithm.ILP_SOLVER)
+    print(y)

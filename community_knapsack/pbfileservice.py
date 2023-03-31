@@ -70,8 +70,8 @@ class PBParser:
         # Project Data
         projects: List[int] = [int(pid) for pid in self._projects.keys()]
         costs: List[List[int]] = [
-            [int(cost) for cost in self._projects[pid]['cost'].split(',')]
-            for pid in self._projects.keys()
+            [int(self._projects[pid]['cost'].split(',')[dim]) for pid in self._projects.keys()]
+            for dim in range(len(budget))
         ]
 
         # Reverse Project Lookup (pid -> projects[idx])
