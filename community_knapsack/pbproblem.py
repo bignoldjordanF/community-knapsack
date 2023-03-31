@@ -14,7 +14,6 @@ a list of project ids, its overall value and the runtime in milliseconds."""
 
 class _PBBaseAlgorithm(Enum):
 
-    @abstractmethod
     def is_approximate(self) -> bool:
         pass
 
