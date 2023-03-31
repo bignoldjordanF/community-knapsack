@@ -132,7 +132,7 @@ class PBParser:
             num_projects=multi_problem.num_projects,
             num_voters=multi_problem.num_voters,
             budget=multi_problem.budget[0],
-            costs=[cost[0] for cost in multi_problem.costs],
+            costs=multi_problem.costs[0],
             utilities=multi_problem.utilities,
             projects=multi_problem.projects,
             voters=multi_problem.voters

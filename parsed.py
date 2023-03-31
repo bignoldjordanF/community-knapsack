@@ -3,7 +3,7 @@ from community_knapsack import *
 
 if __name__ == '__main__':
     # Parse a locally stored .pb file from Pabulib.org:
-    parser: PBParser = PBParser('resources/pabulib/poland_warszawa_2019_ursynow.pb')
+    parser: PBParser = PBParser('resources/pabulib/poland_krakow_2018_.pb')
     problem: PBProblem = parser.problem()
 
     # Find the allocation that the democracy used:

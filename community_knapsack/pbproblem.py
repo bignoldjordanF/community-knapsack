@@ -163,6 +163,13 @@ class PBProblem:
             approximate=algorithm.is_approximate()
         )
 
+    def approximate(self) -> PBResult:
+        ratio_greedy: PBResult = self.solve(PBAlgorithm.RATIO_GREEDY)
+        fptas: PBResult = self.solve(PBAlgorithm.FPTAS)
+        simulated_annealing: PBResult = self.solve(PBAlgorithm.SIMULATED_ANNEALING)
+        genetic_algorithm: PBResult = self.solve(PBAlgorithm.GENETIC_ALGORITHM)
+        return max([ratio_greedy, fptas, simulated_annealing, genetic_algorithm], key=lambda r: r.value)
+
 
 class PBMultiAlgorithm(Enum):
     BRUTE_FORCE = 0
@@ -300,3 +307,9 @@ class PBMultiProblem:
             algorithm=str(algorithm),
             approximate=algorithm.is_approximate()
         )
+
+    def approximate(self) -> PBResult:
+        ratio_greedy: PBResult = self.solve(PBMultiAlgorithm.RATIO_GREEDY)
+        simulated_annealing: PBResult = self.solve(PBMultiAlgorithm.SIMULATED_ANNEALING)
+        genetic_algorithm: PBResult = self.solve(PBMultiAlgorithm.GENETIC_ALGORITHM)
+        return max([ratio_greedy, simulated_annealing, genetic_algorithm], key=lambda r: r.value)

@@ -29,6 +29,9 @@ def single_example():
     print(fptas)
     print()
 
+    print(problem.approximate())
+    print()
+
 
 def multi_example():
     # Randomly generate a d-dimensional example
