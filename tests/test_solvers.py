@@ -1,40 +1,29 @@
-from typing import List
-from community_knapsack import *
 import pytest
+from typing import List, Callable
+from community_knapsack import solvers
 
 
-single_test_data = [(PBParser('resources/testing/example.pb').problem(), [1, 2, 4], 7)]
-single_exact_algorithms = [
-    PBAlgorithm.BRUTE_FORCE,
-    PBAlgorithm.MEMOIZATION,
-    PBAlgorithm.DYNAMIC_PROGRAMMING,
-    PBAlgorithm.BRANCH_AND_BOUND,
-    PBAlgorithm.ILP_SOLVER
+instances = [
+    'resources/testing/knapsack/multi1.txt',
+    'resources/testing/knapsack/multi2.txt',
+    'resources/testing/knapsack/multi3.txt'
+]
+
+functions = [
+    solvers.multi_brute_force,
+    solvers.multi_memoization,
+    # solvers.multi_dynamic_programming
 ]
 
 
-multi_test_data = [(PBParser('resources/testing/multi_example.pb').multi_problem(), [1, 2], 5)]
-multi_exact_algorithms = [
-    PBMultiAlgorithm.BRUTE_FORCE,
-    # PBMultiAlgorithm.DYNAMIC_PROGRAMMING
-    PBMultiAlgorithm.MEMOIZATION,
-    PBMultiAlgorithm.ILP_SOLVER
-]
-
-
-@pytest.mark.parametrize('problem,allocation,value', single_test_data)
-@pytest.mark.parametrize('algorithm', single_exact_algorithms)
-def test_single_exact(problem: PBProblem, allocation: List[int], value: int, algorithm: PBAlgorithm):
-
-    result: PBResult = problem.solve(algorithm)
-    assert result.value == value
-    assert result.allocation == allocation  # Cannot always be asserted!
-
-
-@pytest.mark.parametrize('problem,allocation,value', multi_test_data)
-@pytest.mark.parametrize('algorithm', multi_exact_algorithms)
-def test_multi_exact(problem: PBMultiProblem, allocation: List[int], value: int, algorithm: PBMultiAlgorithm):
-
-    result: PBResult = problem.solve(algorithm)
-    assert result.value == value
-    assert result.allocation == allocation  # Cannot always be asserted!
+@pytest.mark.parametrize('instance_file_path', instances)
+@pytest.mark.parametrize('algorithm_fn', functions)
+def test_instance(instance_file_path: str, algorithm_fn: Callable):
+    with open(instance_file_path, 'r') as file:
+        n, m, v = file.readline().split(' ')
+        values: List[int] = [int(value) for value in file.readline().split(' ')]
+        costs: List[List[int]] = []
+        for _ in range(int(m)):
+            costs.append([int(cost) for cost in file.readline().split(' ')])
+        budgets: List[int] = [int(budget) for budget in file.readline().split(' ')]
+        assert algorithm_fn(budgets, costs, values)[1] == int(v)

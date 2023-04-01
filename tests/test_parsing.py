@@ -1,12 +1,14 @@
 from community_knapsack import *
 import os
+import pytest
+from typing import List
 
 
-single_file_path: str = 'resources/testing/example.pb'
-single_test_file_path: str = 'resources/testing/example_test.pb'
+single_file_path: str = 'resources/testing/pbfiles/example.pb'
+single_test_file_path: str = 'resources/testing/pbfiles/example_test.pb'
 
-multi_file_path: str = 'resources/testing/multi_example.pb'
-multi_test_file_path: str = 'resources/testing/multi_example_test.pb'
+multi_file_path: str = 'resources/testing/pbfiles/multi_example.pb'
+multi_test_file_path: str = 'resources/testing/pbfiles/multi_example_test.pb'
 
 
 def verify_single_example(problem: PBProblem):
@@ -92,3 +94,40 @@ def test_multi_writing():
 
     # Remove Test File
     os.remove(multi_test_file_path)
+
+
+single_test_data = [(PBParser(single_file_path).problem(), [1, 2, 4], 7)]
+single_exact_algorithms = [
+    PBAlgorithm.BRUTE_FORCE,
+    PBAlgorithm.MEMOIZATION,
+    PBAlgorithm.DYNAMIC_PROGRAMMING,
+    PBAlgorithm.BRANCH_AND_BOUND,
+    PBAlgorithm.ILP_SOLVER
+]
+
+
+multi_test_data = [(PBParser(multi_file_path).multi_problem(), [1, 2], 5)]
+multi_exact_algorithms = [
+    PBMultiAlgorithm.BRUTE_FORCE,
+    # PBMultiAlgorithm.DYNAMIC_PROGRAMMING
+    PBMultiAlgorithm.MEMOIZATION,
+    PBMultiAlgorithm.ILP_SOLVER
+]
+
+
+@pytest.mark.parametrize('problem,allocation,value', single_test_data)
+@pytest.mark.parametrize('algorithm', single_exact_algorithms)
+def test_single_exact(problem: PBProblem, allocation: List[int], value: int, algorithm: PBAlgorithm):
+
+    result: PBResult = problem.solve(algorithm)
+    assert result.value == value
+    assert result.allocation == allocation  # Cannot always be asserted!
+
+
+@pytest.mark.parametrize('problem,allocation,value', multi_test_data)
+@pytest.mark.parametrize('algorithm', multi_exact_algorithms)
+def test_multi_exact(problem: PBMultiProblem, allocation: List[int], value: int, algorithm: PBMultiAlgorithm):
+
+    result: PBResult = problem.solve(algorithm)
+    assert result.value == value
+    assert result.allocation == allocation  # Cannot always be asserted!
