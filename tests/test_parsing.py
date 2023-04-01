@@ -4,11 +4,15 @@ import pytest
 from typing import List
 
 
-single_file_path: str = 'resources/testing/pbfiles/example.pb'
-single_test_file_path: str = 'resources/testing/pbfiles/example_test.pb'
+# --- Verify Parsing & Writing ---
 
-multi_file_path: str = 'resources/testing/pbfiles/multi_example.pb'
-multi_test_file_path: str = 'resources/testing/pbfiles/multi_example_test.pb'
+single_tests = [
+    ('resources/testing/pbfiles/example.pb', 'resources/testing/pbfiles/example_test.pb'),
+]
+
+multi_tests = [
+    ('resources/testing/pbfiles/multi_example.pb', 'resources/testing/pbfiles/multi_example_test.pb')
+]
 
 
 def verify_single_example(problem: PBProblem):
@@ -42,61 +46,70 @@ def verify_multi_example(problem: PBMultiProblem):
     ]
 
 
-def test_parsing():
+@pytest.mark.parametrize('file_path,test_file_path', single_tests)
+def test_single_parsing(file_path: str, test_file_path: str):
     # Parse Pre-Existing Instance & Verify
-    parser: PBParser = PBParser(single_file_path)
+    parser: PBParser = PBParser(file_path)
     problem: PBProblem = parser.problem()
     verify_single_example(problem)
 
 
-def test_writing():
+@pytest.mark.parametrize('file_path,test_file_path', single_tests)
+def test_single_writing(file_path: str, test_file_path: str):
     # Parse Pre-Existing Instance
-    parser: PBParser = PBParser(single_file_path)
+    parser: PBParser = PBParser(file_path)
     problem: PBProblem = parser.problem()
 
     # Save Into New File
-    writer: PBWriter = PBWriter(single_test_file_path)
+    writer: PBWriter = PBWriter(test_file_path)
     writer.write(problem)
 
     # Parse Again
-    parser = PBParser(single_test_file_path)
+    parser = PBParser(test_file_path)
     problem = parser.problem()
 
     # Verify
     verify_single_example(problem)
 
     # Remove Test File
-    os.remove(single_test_file_path)
+    os.remove(test_file_path)
 
 
-def test_multi_parsing():
+@pytest.mark.parametrize('file_path,test_file_path', multi_tests)
+def test_multi_parsing(file_path: str, test_file_path: str):
     # Parse Pre-Existing Instance & Verify
-    parser: PBParser = PBParser(multi_file_path)
+    parser: PBParser = PBParser(file_path)
     problem: PBMultiProblem = parser.multi_problem()
     verify_multi_example(problem)
 
 
-def test_multi_writing():
+@pytest.mark.parametrize('file_path,test_file_path', multi_tests)
+def test_multi_writing(file_path: str, test_file_path: str):
     # Parse Pre-Existing Instance
-    parser: PBParser = PBParser(multi_file_path)
+    parser: PBParser = PBParser(file_path)
     problem: PBMultiProblem = parser.multi_problem()
 
     # Save Into New File
-    writer: PBWriter = PBWriter(multi_test_file_path)
+    writer: PBWriter = PBWriter(test_file_path)
     writer.write(problem)
 
     # Parse Again
-    parser = PBParser(multi_test_file_path)
+    parser = PBParser(test_file_path)
     problem = parser.multi_problem()
 
     # Verify
     verify_multi_example(problem)
 
     # Remove Test File
-    os.remove(multi_test_file_path)
+    os.remove(test_file_path)
 
 
-single_test_data = [(PBParser(single_file_path).problem(), [1, 2, 4], 7)]
+# --- Verify Allocations ---
+
+
+single_test_data = [
+    ('resources/testing/pbfiles/example.pb', [1, 2, 4], 7)
+]
 single_exact_algorithms = [
     PBAlgorithm.BRUTE_FORCE,
     PBAlgorithm.MEMOIZATION,
@@ -106,7 +119,9 @@ single_exact_algorithms = [
 ]
 
 
-multi_test_data = [(PBParser(multi_file_path).multi_problem(), [1, 2], 5)]
+multi_test_data = [
+    ('resources/testing/pbfiles/multi_example.pb', [1, 2], 5)
+]
 multi_exact_algorithms = [
     PBMultiAlgorithm.BRUTE_FORCE,
     # PBMultiAlgorithm.DYNAMIC_PROGRAMMING
@@ -115,19 +130,21 @@ multi_exact_algorithms = [
 ]
 
 
-@pytest.mark.parametrize('problem,allocation,value', single_test_data)
+@pytest.mark.parametrize('file_path,allocation,value', single_test_data)
 @pytest.mark.parametrize('algorithm', single_exact_algorithms)
-def test_single_exact(problem: PBProblem, allocation: List[int], value: int, algorithm: PBAlgorithm):
+def test_single_exact(file_path: str, allocation: List[int], value: int, algorithm: PBAlgorithm):
 
+    problem: PBProblem = PBParser(file_path).problem()
     result: PBResult = problem.solve(algorithm)
     assert result.value == value
     assert result.allocation == allocation  # Cannot always be asserted!
 
 
-@pytest.mark.parametrize('problem,allocation,value', multi_test_data)
+@pytest.mark.parametrize('file_path,allocation,value', multi_test_data)
 @pytest.mark.parametrize('algorithm', multi_exact_algorithms)
-def test_multi_exact(problem: PBMultiProblem, allocation: List[int], value: int, algorithm: PBMultiAlgorithm):
+def test_multi_exact(file_path: str, allocation: List[int], value: int, algorithm: PBMultiAlgorithm):
 
+    problem: PBMultiProblem = PBParser(file_path).multi_problem()
     result: PBResult = problem.solve(algorithm)
     assert result.value == value
     assert result.allocation == allocation  # Cannot always be asserted!
