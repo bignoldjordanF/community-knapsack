@@ -5,7 +5,7 @@ from collections import namedtuple
 from timeit import default_timer
 from typing import List
 from enum import Enum
-
+import warnings
 
 PBResult = namedtuple('PBResult', ('allocation', 'value', 'runtime', 'algorithm', 'approximate'))
 """A named-tuple for allocation results, containing the allocation as
@@ -150,6 +150,24 @@ class _PBBaseProblem:
         self.projects: List[int] = projects if projects else [idx for idx in range(num_projects)]
         self.voters: List[int] = voters if voters else [idx for idx in range(num_voters)]
 
+        # Verify Input
+        if self.num_projects != len(self.projects):
+            warnings.warn(f'There were {num_projects} expected but {len(self.projects)} found.')
+            self.num_projects = len(self.projects)
+
+        if self.num_voters != len(self.voters):
+            warnings.warn(f'There were {num_voters} expected but {len(self.voters)} found.')
+            self.num_voters = len(self.voters)
+
+        if self.num_voters != len(self.utilities):
+            raise ValueError(f'There were {num_voters} expected utilities over projects'
+                             f' but only {len(self.utilities)} voters have their utilities provided.')
+
+        for vid, utility in enumerate(utilities):
+            if len(utility) != self.num_projects:
+                raise ValueError(f'Voter {vid} has {len(utility)} utilities/votes provided but must have'
+                                 f' exactly {self.num_projects}.')
+
     def __str__(self) -> str:
         """
         :return: A string representing the problem data.
@@ -189,6 +207,10 @@ class PBProblem(_PBBaseProblem):
         super().__init__(num_projects, num_voters, utilities, projects, voters)
         self.budget: int = budget
         self.costs: List[int] = costs
+
+        # Verify Input
+        if self.num_projects != len(self.costs):
+            raise ValueError(f'There were {self.num_projects} expected costs but {len(self.costs)} found.')
 
     def solve(self, algorithm: PBAlgorithm) -> PBResult:
         """
@@ -284,6 +306,15 @@ class PBMultiProblem(_PBBaseProblem):
         super().__init__(num_projects, num_voters, utilities, projects, voters)
         self.budget: List[int] = budget
         self.costs: List[List[int]] = costs
+
+        # Verify Input
+        if len(self.budget) != len(self.costs):
+            raise ValueError(f'There were expected {len(self.budget)} sets of costs but {len(self.costs)} found.')
+
+        for cid, cost in enumerate(self.costs):
+            if len(cost) != self.num_projects:
+                raise ValueError(f'Cost {cid} has given costs for {len(cost)} projects '
+                                 f'but {self.num_projects} were expected.')
 
     def solve(self, algorithm: PBMultiAlgorithm) -> PBResult:
         """
