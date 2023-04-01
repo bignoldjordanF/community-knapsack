@@ -48,6 +48,7 @@ def verify_multi_example(problem: PBMultiProblem):
 
 @pytest.mark.parametrize('file_path,test_file_path', single_tests)
 def test_single_parsing(file_path: str, test_file_path: str):
+    """Ensures parsing a .pb file gives the correct data."""
     # Parse Pre-Existing Instance & Verify
     parser: PBParser = PBParser(file_path)
     problem: PBProblem = parser.problem()
@@ -56,6 +57,7 @@ def test_single_parsing(file_path: str, test_file_path: str):
 
 @pytest.mark.parametrize('file_path,test_file_path', single_tests)
 def test_single_writing(file_path: str, test_file_path: str):
+    """Ensures writing a .pb file stores the correct data."""
     # Parse Pre-Existing Instance
     parser: PBParser = PBParser(file_path)
     problem: PBProblem = parser.problem()
@@ -77,6 +79,7 @@ def test_single_writing(file_path: str, test_file_path: str):
 
 @pytest.mark.parametrize('file_path,test_file_path', multi_tests)
 def test_multi_parsing(file_path: str, test_file_path: str):
+    """Ensures parsing a .pb file gives the correct data."""
     # Parse Pre-Existing Instance & Verify
     parser: PBParser = PBParser(file_path)
     problem: PBMultiProblem = parser.multi_problem()
@@ -85,6 +88,7 @@ def test_multi_parsing(file_path: str, test_file_path: str):
 
 @pytest.mark.parametrize('file_path,test_file_path', multi_tests)
 def test_multi_writing(file_path: str, test_file_path: str):
+    """Ensures writing a .pb file stores the correct data."""
     # Parse Pre-Existing Instance
     parser: PBParser = PBParser(file_path)
     problem: PBMultiProblem = parser.multi_problem()
@@ -133,7 +137,7 @@ multi_exact_algorithms = [
 @pytest.mark.parametrize('file_path,allocation,value', single_test_data)
 @pytest.mark.parametrize('algorithm', single_exact_algorithms)
 def test_single_exact(file_path: str, allocation: List[int], value: int, algorithm: PBAlgorithm):
-
+    """Ensures solving a .pb instance provides the correct result."""
     problem: PBProblem = PBParser(file_path).problem()
     result: PBResult = problem.solve(algorithm)
     assert result.value == value
@@ -143,7 +147,7 @@ def test_single_exact(file_path: str, allocation: List[int], value: int, algorit
 @pytest.mark.parametrize('file_path,allocation,value', multi_test_data)
 @pytest.mark.parametrize('algorithm', multi_exact_algorithms)
 def test_multi_exact(file_path: str, allocation: List[int], value: int, algorithm: PBMultiAlgorithm):
-
+    """Ensures solving a .pb instance provides the correct result."""
     problem: PBMultiProblem = PBParser(file_path).multi_problem()
     result: PBResult = problem.solve(algorithm)
     assert result.value == value

@@ -2,6 +2,7 @@ from community_knapsack.pbfunc import *
 
 
 def test_aggregate_utilitarian():
+    """Ensures aggregating utilities provides the correct list of project values."""
     # Essentially just summing the votes for each project:
     num_projects: int = 5
     utilities: List[List[int]] = [
@@ -15,6 +16,7 @@ def test_aggregate_utilitarian():
 
 
 def test_resolve_project_ids():
+    """Ensures an allocation of indexes is resolved to project ids correctly."""
     # Converting an allocation of project indexes to an
     # allocation of project ids:
     projects: List[int] = [4, 9, 10, 12, 13]
@@ -23,6 +25,7 @@ def test_resolve_project_ids():
 
 
 def test_ordinal_to_utility():
+    """Ensures ordinal preferences are correctly converted to utility values."""
     # Converting a list of projects ids denoting most to least preferred
     # to a list of utility values using Borda count:
     lookup: Dict[int, int] = {4: 0, 9: 1, 10: 2, 12: 3, 13: 4}
@@ -31,12 +34,14 @@ def test_ordinal_to_utility():
 
 
 def test_approval_to_utility():
+    """Ensures approval votes are correctly converted to utility values."""
     lookup: Dict[int, int] = {4: 0, 9: 1, 10: 2, 12: 3, 13: 4}
     votes: List[int] = [9, 10, 12]
     assert votes_to_utility('approval', lookup, votes, []) == [0, 1, 1, 1, 0]
 
 
 def test_cumulative_scoring_to_utility():
+    """Ensures cumulative and scoring votes are correctly converted to utility values."""
     lookup: Dict[int, int] = {4: 0, 9: 1, 10: 2, 12: 3, 13: 4}
     votes: List[int] = [10, 4, 13]
     points: List[int] = [4, 5, 2]

@@ -19,6 +19,7 @@ single_functions = [
 @pytest.mark.parametrize('instance_file_path', single_instances)
 @pytest.mark.parametrize('algorithm_fn', single_functions)
 def test_single_instance(instance_file_path: str, algorithm_fn: Callable):
+    """Ensures solving a test instance from a file gives the optimal value."""
     with open(instance_file_path, 'r') as file:
         capacity: int = int(file.readline())
         costs: List[int] = [int(cost) for cost in file.readline().split(' ')]
@@ -43,6 +44,7 @@ multi_functions = [
 @pytest.mark.parametrize('instance_file_path', multi_instances)
 @pytest.mark.parametrize('algorithm_fn', multi_functions)
 def test_multi_instance(instance_file_path: str, algorithm_fn: Callable):
+    """Ensures solving a test instance from a file gives the optimal value."""
     with open(instance_file_path, 'r') as file:
         n, m, v = file.readline().split(' ')
         values: List[int] = [int(value) for value in file.readline().split(' ')]
