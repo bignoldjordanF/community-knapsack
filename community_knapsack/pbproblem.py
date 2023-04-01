@@ -193,7 +193,7 @@ class PBProblem(_PBBaseProblem):
         and solves it using the specified algorithm.
 
         :param algorithm: The name of the algorithm that should be used to solve the problem.
-        :return: The optimal allocation for the problem, its overall value and the run-time in milliseconds.
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
         start_time: float = default_timer()
 
@@ -248,6 +248,13 @@ class PBProblem(_PBBaseProblem):
         )
 
     def approximate(self) -> PBResult:
+        """
+        Uses fast approximation schemes to find an approximation of the optimal
+        solution for this instance. The best result out of the algorithms run
+        is returned.
+
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
+        """
         ratio_greedy: PBResult = self.solve(PBAlgorithm.RATIO_GREEDY)
         fptas: PBResult = self.solve(PBAlgorithm.FPTAS)
         simulated_annealing: PBResult = self.solve(PBAlgorithm.SIMULATED_ANNEALING)
@@ -281,7 +288,7 @@ class PBMultiProblem(_PBBaseProblem):
         and solves it using the specified algorithm.
 
         :param algorithm: The name of the algorithm that should be used to solve the problem.
-        :return: The optimal allocation for the problem, its overall value and the run-time in milliseconds.
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
         start_time: float = default_timer()
 
@@ -336,6 +343,13 @@ class PBMultiProblem(_PBBaseProblem):
         )
 
     def approximate(self) -> PBResult:
+        """
+        Uses fast approximation schemes to find an approximation of the optimal
+        solution for this instance. The best result out of the algorithms run
+        is returned.
+
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
+        """
         ratio_greedy: PBResult = self.solve(PBMultiAlgorithm.RATIO_GREEDY)
         simulated_annealing: PBResult = self.solve(PBMultiAlgorithm.SIMULATED_ANNEALING)
         genetic_algorithm: PBResult = self.solve(PBMultiAlgorithm.GENETIC_ALGORITHM)
