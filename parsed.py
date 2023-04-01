@@ -6,8 +6,6 @@ if __name__ == '__main__':
     parser: PBParser = PBParser('resources/testing/example.pb')
     problem: PBProblem = parser.problem()
 
-    problem.approximate()
-
     # Find the allocation that the democracy used:
     predefined: PBResult = parser.predefined()
 
@@ -17,8 +15,8 @@ if __name__ == '__main__':
     # Solve using e.g. greedy, genetic, simulated annealing:
     greedy: PBResult = problem.solve(PBAlgorithm.GREEDY)
     genetic: PBResult = problem.solve(PBAlgorithm.GENETIC_ALGORITHM)
-    memoization: PBResult = problem.solve(PBAlgorithm.SIMULATED_ANNEALING)
+    simulated_annealing: PBResult = problem.solve(PBAlgorithm.SIMULATED_ANNEALING)
 
     print(greedy)
     print(genetic)
-    print(memoization)
+    print(simulated_annealing)
