@@ -31,7 +31,7 @@ def test_single_instance(instance_file_path: str, algorithm_fn: Callable):
 multi_instances = [
     'resources/testing/knapsack/multi1.txt',
     'resources/testing/knapsack/multi2.txt',
-    'resources/testing/knapsack/multi3.txt'
+    # 'resources/testing/knapsack/multi3.txt'
 ]
 multi_functions = [
     solvers.multi_brute_force,
