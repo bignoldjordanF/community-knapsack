@@ -14,6 +14,9 @@ a list of project ids, its overall value and the runtime in milliseconds."""
 
 class _PBBaseAlgorithm(Enum):
 
+    def __str__(self):
+        return self.name
+
     def is_approximate(self) -> bool:
         pass
 
