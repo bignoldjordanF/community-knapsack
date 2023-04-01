@@ -3,7 +3,7 @@ from community_knapsack import *
 
 if __name__ == '__main__':
     # Parse a locally stored .pb file:
-    parser: PBParser = PBParser('resources/testing/example.pb')
+    parser: PBParser = PBParser('resources/testing/pbfiles/example.pb')
     problem: PBProblem = parser.problem()
 
     # Find the allocation that the democracy used:
