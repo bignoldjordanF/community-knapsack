@@ -2,7 +2,7 @@ from ..exact import dynamic_programming_min_weight
 from typing import List, Tuple
 
 
-def fptas(capacity: int, weights: List[int], values: List[int], accuracy: float=0.5) -> Tuple[List[int], int]:
+def fptas(capacity: int, weights: List[int], values: List[int], accuracy: float = 0.5) -> Tuple[List[int], int]:
     """
     A relatively fast algorithm that uses the dynamic programming algorithm to find an approximate within
     a percentage of the optimal allocation. A very good option for larger problem sizes where exact algorithms
