@@ -1,2 +1,2 @@
-from .exact import *
-from .approximate import *
+from . import exact
+from . import approximate
