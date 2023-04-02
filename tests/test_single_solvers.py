@@ -57,9 +57,3 @@ class TestClassicKnapsack:
         # converge on optima for each instance:
         capacity, weights, values, optimal = TestClassicKnapsack._parse_file(file_path)
         assert abs(solver(capacity, weights, values)[1] - optimal) <= (0.3 * optimal)
-
-
-class TestMultiDimensionalKnapsack:
-    """Ensures the solver algorithms for the multidimensional knapsack problem produce correct and/or reasonable
-    results."""
-    pass
