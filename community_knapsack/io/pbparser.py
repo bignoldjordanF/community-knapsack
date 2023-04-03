@@ -9,7 +9,9 @@ import warnings
 
 
 class PBParserError(Exception):
-    """An exception raised when an error is encountered parsing a .pb file."""
+    """An exception raised when an error is encountered parsing a .pb file. These errors
+    try to reflect the changes to be made, but please note that they may arise if the
+    .pb file do not follow the correct format (http://pabulib.org/format)."""
     pass
 
 
@@ -48,7 +50,7 @@ class PBParser:
 
         # The data is first parsed into dictionaries:
         _metadata: Dict[str, str] = {
-            'budget': [],
+            'budget': '',
             'vote_type': ''
         }
         _projects: Dict[str, Dict[str, str]] = {}
