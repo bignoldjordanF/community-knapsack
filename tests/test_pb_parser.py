@@ -19,9 +19,7 @@ class TestPBParsing:
     def test_bad_syntax(self):
         """The parser should raise an error when a .pb (csv) file has bad syntax."""
         with pytest.raises(community_knapsack.io.pbparser.PBParserError):
-            p = PBParser('resources/tests/pb/bad_syntax.pb')
-            r = p.multi_problem()
-            print(r.costs)
+            PBParser('resources/tests/pb/bad_syntax.pb')
 
     def test_bad_budget(self):
         """The parser should raise an error when a non-numeric budget is entered."""
