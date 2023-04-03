@@ -1,11 +1,7 @@
-import community_knapsack.io.pbparser
 from community_knapsack import PBWriter,\
     PBParser, \
     PBSingleProblem, \
-    PBMultiProblem, \
-    PBSingleAlgorithm, \
-    PBMultiAlgorithm, \
-    PBResult
+    PBMultiProblem
 import os
 
 
