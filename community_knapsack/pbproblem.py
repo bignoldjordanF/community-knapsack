@@ -68,6 +68,8 @@ class _PBProblem(ABC):
 
 
 class PBSingleProblem(_PBProblem):
+    """A class to store and solve single-dimensional (single budget) participatory budgeting problem data."""
+
     def __init__(
             self,
             num_projects: int,
@@ -78,6 +80,19 @@ class PBSingleProblem(_PBProblem):
             projects: Sequence[Union[str, int]] = None,
             voters: Sequence[Union[str, int]] = None
     ):
+        """
+        Instantiates a single-dimensional (a typical single budget) participatory budgeting problem. This is
+        the correct class to use if you have a single budget and thus each project has a single cost. If you
+        are unsure, use the PBMultiProblem class.
+
+        :param num_projects: The number of projects in the instance.
+        :param num_voters: The number of voters in the instance.
+        :param budget: A single fixed budget for the instance (the budget of your instance).
+        :param costs: A list of costs for each project, e.g., [10, 12, ...], project one has cost 10, two 12, etc...
+        :param utilities: A list of lists of utilities for each voter over the projects.
+        :param projects: An optional list of custom project ids, defaulting to 0,...,num_projects-1 otherwise.
+        :param voters: An optional list of custom voter ids, defaulting to 0,...,num_voters-1 otherwise.
+        """
         # Call Superclass
         super().__init__(num_projects, num_voters, utilities, projects, voters)
 
@@ -93,6 +108,7 @@ class PBSingleProblem(_PBProblem):
 
 
 class PBMultiProblem(_PBProblem):
+    """A class to store and solve multi-dimensional (multi-budget) participatory budgeting problem data."""
     def __init__(
             self,
             num_projects: int,
@@ -103,6 +119,20 @@ class PBMultiProblem(_PBProblem):
             projects: Sequence[Union[str, int]] = None,
             voters: Sequence[Union[str, int]] = None
     ):
+        """
+        Instantiates a multidimensional (a multi-budget) participatory budgeting problem. This is the correct
+        class to use if you know that you have multiple (more than one) budgets, and thus each project has
+        a cost towards each budget (e.g., if you have three budgets, each project has three costs, one for
+        each budget).
+
+        :param num_projects: The number of projects in the instance.
+        :param num_voters: The number of voters in the instance.
+        :param budget: A list of budgets for the instance, e.g., [10000, 200000, ...].
+        :param costs: A list of lists of project costs in each dimension, e.g., [[5000, 6000], [98000, 102000]].
+        :param utilities: A list of lists of utilities for each voter over the projects.
+        :param projects: An optional list of custom project ids, defaulting to 0,...,num_projects-1 otherwise.
+        :param voters: An optional list of custom voter ids, defaulting to 0,...,num_voters-1 otherwise.
+        """
         # Call Superclass
         super().__init__(num_projects, num_voters, utilities, projects, voters)
 
