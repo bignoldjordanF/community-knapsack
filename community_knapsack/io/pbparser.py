@@ -184,7 +184,6 @@ class PBParser:
             # Convert them to utility values and append to list:
             utilities.append(pbutils.vote_to_utility(len(projects), vote_type, _votes, _points))
 
-        print(budget)
         return PBMultiProblem(
             num_projects=len(projects),
             num_voters=len(voters),
