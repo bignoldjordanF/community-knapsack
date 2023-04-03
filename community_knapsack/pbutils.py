@@ -51,7 +51,8 @@ def ordinal_to_utility(
         raise ValueError('A single project was voted for more than once by a voter.')
 
     if 0 <= min_vote_length > len(votes):
-        raise ValueError('There can at most `min_vote_length` projects submitted when enabling minimum vote length.')
+        raise ValueError('There must be at least `min_vote_length` projects submitted when enabling minimum '
+                         'vote length.')
 
     if 0 <= max_vote_length < len(votes):
         raise ValueError('There can at most `max_vote_length` projects submitted when enabling maximum vote length.')
