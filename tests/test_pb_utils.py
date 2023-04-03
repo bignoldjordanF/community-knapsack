@@ -56,17 +56,17 @@ class TestVoteConversion:
             pbutils.ordinal_to_utility(num_projects=5, votes=[1, 2, 354, 4, 5, 6])
 
     def test_ordinal_min_vote_length(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that there are at least min_vote_length preferences submitted."""
         with pytest.raises(ValueError):
             pbutils.ordinal_to_utility(num_projects=5, votes=[], min_vote_length=1)
 
     def test_ordinal_max_vote_length(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that there are at most max_vote_length preferences submitted."""
         with pytest.raises(ValueError):
             pbutils.ordinal_to_utility(num_projects=5, votes=[1, 2], max_vote_length=1)
 
     def test_empty_success(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that no projects and an empty list of votes yields an empty utility list."""
         assert pbutils.vote_to_utility(
             num_projects=0,
             vote_type='cumulative',
@@ -75,7 +75,7 @@ class TestVoteConversion:
         ) == []
 
     def test_approval_voting_success(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that approval voting yields the correct utility values."""
         assert pbutils.vote_to_utility(
             num_projects=5,
             vote_type='approval',
@@ -83,7 +83,7 @@ class TestVoteConversion:
         ) == [1, 1, 0, 0, 1]
 
     def test_cumulative_voting_success(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that cumulative voting yields the correct utility values."""
         assert pbutils.vote_to_utility(
             num_projects=5,
             vote_type='cumulative',
@@ -92,7 +92,7 @@ class TestVoteConversion:
         ) == [0, 0, 10, 0, 11]
 
     def test_scoring_voting_success(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that scoring voting yields the correct utility values."""
         assert pbutils.vote_to_utility(
             num_projects=5,
             vote_type='scoring',
@@ -101,7 +101,7 @@ class TestVoteConversion:
         ) == [0, 0, 10, 11, 0]
 
     def test_ordinal_voting_success(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that ordinal voting yields the correct utility values."""
         assert pbutils.vote_to_utility(
             num_projects=5,
             vote_type='ordinal',
@@ -109,7 +109,7 @@ class TestVoteConversion:
         ) == [0, 0, 8, 7, 0]
 
     def test_ordinal_voting_success_2(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that ordinal voting yields the correct utility values."""
         assert pbutils.vote_to_utility(
             num_projects=5,
             vote_type='ordinal',
@@ -117,7 +117,7 @@ class TestVoteConversion:
         ) == [0, 4, 6, 5, 0]
 
     def test_borda_count(self):
-        """Ensures that there are at most min_vote_length preferences submitted."""
+        """Ensures that ordinal voting yields the correct utility values."""
         assert pbutils.ordinal_to_utility(
             num_projects=5,
             votes=[2, 3, 1],
