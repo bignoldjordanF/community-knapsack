@@ -51,7 +51,7 @@ class PBParser:
         # The data is first parsed into dictionaries:
         _metadata: Dict[str, str] = {
             'budget': '',
-            'vote_type': ''
+            'vote_type': '',
         }
         _projects: Dict[str, Dict[str, str]] = {}
         _voters: Dict[str, Dict[str, str]] = {}
