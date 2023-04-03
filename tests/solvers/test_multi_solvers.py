@@ -9,6 +9,10 @@ class TestMultiDimensionalKnapsack:
 
     knapsack_test_file_paths: List[str] = [
         'resources/tests/knapsack/multi/p01.txt',
+        'resources/tests/knapsack/multi/p02.txt',
+        'resources/tests/knapsack/multi/p03.txt',
+        'resources/tests/knapsack/multi/p04.txt',
+        'resources/tests/knapsack/multi/p05.txt',
     ]
 
     exact_solver_functions: List[Callable] = [
