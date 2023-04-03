@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 
 
 @dataclass
 class PBResult:
-    allocation: List[int]
+    allocation: List[Union[str, int]]
     """A list of project ids (not indexes) that are funded in the budget allocation."""
 
     value: int
