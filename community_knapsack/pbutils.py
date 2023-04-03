@@ -98,7 +98,7 @@ def vote_to_utility(num_projects: int, vote_type: str, votes: List[int], points:
         if points is None or len(points) != len(votes):
             if points is None:
                 points = []
-            raise ValueError(f'There must be as many points ({len(points)} found) as votes ({len(votes)} found) in'
+            raise ValueError(f'There must be as many points ({len(points)} found) as votes ({len(votes)} found) in '
                              f'cumulative or scoring voting.')
 
     utility: List[int] = [0] * num_projects
