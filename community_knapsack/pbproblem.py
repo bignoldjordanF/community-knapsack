@@ -71,11 +71,19 @@ class _PBProblem(ABC):
         self.voters = voters
 
     @abstractmethod
-    def _worker(self, algorithm: _PBAlgorithm, values: List[int], result_queue: mp.Queue):
+    def _worker(self, algorithm: _PBAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
         pass
 
     @abstractmethod
     def solve(self, algorithm: _PBAlgorithm, timeout: float) -> PBResult:
+        """
+        Reduces a participatory budgeting problem to a binary knapsack problem and solves it using
+        the specified algorithm, returning a budget allocation.
+
+        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :param timeout: The maximum number of seconds before the algorithm aborts, or -1 for no timeout.
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
+        """
         start_time: float = default_timer()
 
         # Aggregate the utilities via utilitarian welfare:
@@ -151,7 +159,15 @@ class PBSingleProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def _worker(self, algorithm: PBSingleAlgorithm, values: List[int], result_queue: mp.Queue):
+    def _worker(self, algorithm: PBSingleAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
+        """
+        A worker function to call a solver (algorithm) and return the budget allocation for
+        the participatory budgeting problem.
+
+        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :param values: A list of values for each project, i.e., values[i] is the value for project i.
+        :param result_queue: A result queue used to store the results from the solver.
+        """
         allocation, value = algorithm(self.budget, self.costs, values)
         result_queue.put((allocation, value))
 
@@ -209,7 +225,15 @@ class PBMultiProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def _worker(self, algorithm: PBMultiAlgorithm, values: List[int], result_queue: mp.Queue):
+    def _worker(self, algorithm: PBMultiAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
+        """
+        A worker function to call a solver (algorithm) and return the budget allocation for
+        the participatory budgeting problem.
+
+        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :param values: A list of values for each project, i.e., values[i] is the value for project i.
+        :param result_queue: A result queue used to store the results from the solver.
+        """
         allocation, value = algorithm(self.budget, self.costs, values)
         result_queue.put((allocation, value))
 
