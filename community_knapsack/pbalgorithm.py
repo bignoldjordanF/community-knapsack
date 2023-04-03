@@ -91,7 +91,7 @@ class PBMultiAlgorithm(_PBAlgorithm):
     """A relatively fast algorithm derived from the process of evolution which provides approximations of the
     optimal solution."""
 
-    GREEDY = (solvers.approximate.greedy,)
+    GREEDY = (solvers.approximate.multi_greedy,)
     """A fast approximation algorithm that picks projects by their overall value. This is commonly used
     in real-world budget allocations."""
 
