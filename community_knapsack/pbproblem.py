@@ -1,5 +1,11 @@
+from .pbalgorithm import _PBAlgorithm,\
+    PBSingleAlgorithm,\
+    PBMultiAlgorithm
+from . import pbutils
+
+from typing import Sequence, Union, List
 from abc import ABC, abstractmethod
-from typing import Sequence, Union
+from timeit import default_timer
 import warnings
 
 
@@ -63,7 +69,7 @@ class _PBProblem(ABC):
         self.voters = voters
 
     @abstractmethod
-    def solve(self):
+    def solve(self, algorithm: _PBAlgorithm):
         pass
 
 
@@ -103,8 +109,25 @@ class PBSingleProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self):
-        pass
+    def solve(self, algorithm: PBSingleAlgorithm):
+        """
+        Reduces a one-dimensional (single budget) participatory budgeting problem to the classic binary
+        knapsack problem and solves it using the specified algorithm, returning a budget allocation.
+
+        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
+        """
+        start_time: float = default_timer()
+
+        # Aggregate the utilities via utilitarian welfare:
+        values: List[int] = pbutils.aggregate_utilitarian(
+            self.num_projects,
+            self.utilities
+        )
+        allocation = algorithm(self.budget, self.costs, values)
+
+        end_time: float = default_timer()
+        return allocation[0], allocation[1]
 
 
 class PBMultiProblem(_PBProblem):
@@ -149,5 +172,23 @@ class PBMultiProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self):
-        pass
+    def solve(self, algorithm: PBMultiAlgorithm):
+        """
+        Reduces a multidimensional (multiple budget) participatory budgeting problem to the
+        multidimensional binary knapsack problem and solves it using the specified algorithm,
+        returning a budget allocation.
+
+        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :return: An allocation for the problem, its overall value and the run-time in milliseconds.
+        """
+        start_time: float = default_timer()
+
+        # Aggregate the utilities via utilitarian welfare:
+        values: List[int] = pbutils.aggregate_utilitarian(
+            self.num_projects,
+            self.utilities
+        )
+        allocation = algorithm(self.budget, self.costs, values)
+
+        end_time: float = default_timer()
+        return allocation[0], allocation[1]
