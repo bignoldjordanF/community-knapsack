@@ -1,5 +1,7 @@
 import community_knapsack.io.pbparser
-from community_knapsack import PBParser
+from community_knapsack import PBParser,\
+    PBSingleProblem, \
+    PBMultiProblem
 import pytest
 
 
@@ -63,3 +65,55 @@ class TestPBParsing:
         cumulative or scoring voting types."""
         with pytest.raises(community_knapsack.io.pbparser.PBParserError):
             PBParser('resources/tests/pb/bad_points.pb')
+
+    def test_success(self):
+        """Ensures a valid .pb file can be parsed successfully, without errors or warnings."""
+        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
+        assert problem.num_projects == 5
+        assert problem.num_voters == 5
+        assert problem.budget == 100
+        assert problem.costs == [50, 75, 90, 20, 10]
+        assert problem.utilities == [
+            [1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0],
+            [0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0],
+        ]
+        assert problem.projects == ['5', '6', '7', '8', '9']
+        assert problem.voters == ['1', '2', '3', '4', '5']
+
+    def test_single_as_multi_success(self):
+        """Ensures a valid (single) .pb file can be parsed as a multi-problem successfully,
+         without errors or warnings."""
+        problem: PBMultiProblem = PBParser('resources/tests/pb/valid.pb').multi_problem()
+        assert problem.num_projects == 5
+        assert problem.num_voters == 5
+        assert problem.budget == [100]
+        assert problem.costs == [[50, 75, 90, 20, 10]]
+        assert problem.utilities == [
+            [1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0],
+            [0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0],
+        ]
+        assert problem.projects == ['5', '6', '7', '8', '9']
+        assert problem.voters == ['1', '2', '3', '4', '5']
+
+    def test_multi_success(self):
+        """Ensures a valid (multi) .pb file can be parsed successfully, without errors or warnings."""
+        problem: PBMultiProblem = PBParser('resources/tests/pb/multi_valid.pb').multi_problem()
+        assert problem.num_projects == 5
+        assert problem.num_voters == 5
+        assert problem.budget == [100, 200]
+        assert problem.costs == [[50, 75, 90, 20, 10], [75, 100, 90, 50, 85]]
+        assert problem.utilities == [
+            [1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0],
+            [0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0],
+        ]
+        assert problem.projects == ['5', '6', '7', '8', '9']
+        assert problem.voters == ['1', '2', '3', '4', '5']
