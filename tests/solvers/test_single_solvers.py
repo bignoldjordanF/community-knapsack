@@ -28,7 +28,9 @@ class TestClassicKnapsack:
     approximate_solver_functions: List[Callable] = [
         solvers.approximate.fptas,
         solvers.approximate.simulated_annealing,
-        solvers.approximate.genetic_algorithm
+        solvers.approximate.genetic_algorithm,
+        solvers.approximate.ratio_greedy,
+        solvers.approximate.greedy
     ]
 
     @staticmethod

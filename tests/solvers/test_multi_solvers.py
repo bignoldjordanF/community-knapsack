@@ -20,7 +20,8 @@ class TestMultiDimensionalKnapsack:
     approximate_solver_functions: List[Callable] = [
         solvers.approximate.multi_branch_and_bound,
         solvers.approximate.multi_simulated_annealing,
-        solvers.approximate.multi_genetic_algorithm
+        solvers.approximate.multi_genetic_algorithm,
+        solvers.approximate.multi_ratio_greedy
     ]
 
     @staticmethod
