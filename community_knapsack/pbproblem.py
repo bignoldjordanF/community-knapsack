@@ -180,13 +180,13 @@ class PBMultiProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self, algorithm: PBMultiAlgorithm):
+    def solve(self, multi_algorithm: PBMultiAlgorithm):
         """
         Reduces a multidimensional (multiple budget) participatory budgeting problem to the
         multidimensional binary knapsack problem and solves it using the specified algorithm,
         returning a budget allocation.
 
-        :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :param multi_algorithm: The name of the algorithm that should be used to solve the problem.
         :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
         start_time: float = default_timer()
@@ -196,7 +196,7 @@ class PBMultiProblem(_PBProblem):
             self.num_projects,
             self.utilities
         )
-        allocation, value = algorithm(self.budget, self.costs, values)
+        allocation, value = multi_algorithm(self.budget, self.costs, values)
 
         end_time: float = default_timer()
 
@@ -204,6 +204,6 @@ class PBMultiProblem(_PBProblem):
             allocation=[self.projects[idx] for idx in allocation],
             value=value,
             runtime=(end_time - start_time) * 1000,
-            algorithm=algorithm.name,
-            approximate=algorithm.is_approximate()
+            algorithm=multi_algorithm.name,
+            approximate=multi_algorithm.is_approximate()
         )
