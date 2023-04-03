@@ -57,43 +57,47 @@ class PBParser:
         _voters: Dict[str, Dict[str, str]] = {}
 
         # Parse the .pb file:
-        with open(self.file_path, 'r', newline='', encoding='utf-8') as csv_file:
-            # The current section and header is stored at all times:
-            current_section: str = ''
-            current_header: List[str] = []
+        try:
+            with open(self.file_path, 'r', newline='', encoding='utf-8') as csv_file:
+                # The current section and header is stored at all times:
+                current_section: str = ''
+                current_header: List[str] = []
 
-            # Read the csv .pb file:
-            csv_reader: csv.reader = csv.reader(csv_file, delimiter=';')
-            for csv_row in csv_reader:
-                row_name: str = csv_row[0].strip().lower()
+                # Read the csv .pb file:
+                csv_reader: csv.reader = csv.reader(csv_file, delimiter=';')
+                for csv_row in csv_reader:
+                    row_name: str = csv_row[0].strip().lower()
 
-                # Determine the current header and section:
-                if row_name in ('meta', 'projects', 'votes'):
-                    current_section = row_name
-                    current_header = next(csv_reader)
+                    # Determine the current header and section:
+                    if row_name in ('meta', 'projects', 'votes'):
+                        current_section = row_name
+                        current_header = next(csv_reader)
 
-                # Parse Metadata
-                elif current_section == 'meta':
-                    if row_name in _metadata:
-                        _metadata[row_name] = csv_row[1].lower().strip()
+                    # Parse Metadata
+                    elif current_section == 'meta':
+                        if row_name in _metadata:
+                            _metadata[row_name] = csv_row[1].lower().strip()
 
-                # Parse Projects
-                elif current_section == 'projects':
-                    _projects[row_name] = {'cost': '', 'selected': ''}
-                    for column_idx, column_name in enumerate(current_header[1:]):
-                        column_name = column_name.lower().strip()
-                        if column_name in _projects[row_name]:
-                            _projects[row_name][column_name] = \
-                                csv_row[column_idx + 1].lower().strip()
+                    # Parse Projects
+                    elif current_section == 'projects':
+                        _projects[row_name] = {'cost': '', 'selected': ''}
+                        for column_idx, column_name in enumerate(current_header[1:]):
+                            column_name = column_name.lower().strip()
+                            if column_name in _projects[row_name]:
+                                _projects[row_name][column_name] = \
+                                    csv_row[column_idx + 1].lower().strip()
 
-                # Parse Voters
-                elif current_section == 'votes':
-                    _voters[row_name] = {'vote': '', 'points': ''}
-                    for column_idx, column_name in enumerate(current_header[1:]):
-                        column_name = column_name.lower().strip()
-                        if column_name in _voters[row_name]:
-                            _voters[row_name][column_name] = \
-                                csv_row[column_idx + 1].lower().strip()
+                    # Parse Voters
+                    elif current_section == 'votes':
+                        _voters[row_name] = {'vote': '', 'points': ''}
+                        for column_idx, column_name in enumerate(current_header[1:]):
+                            column_name = column_name.lower().strip()
+                            if column_name in _voters[row_name]:
+                                _voters[row_name][column_name] = \
+                                    csv_row[column_idx + 1].lower().strip()
+        except IndexError as error:
+            raise PBParserError('There was an error in the syntax of the .pb file. Please see http://pabulib.org '
+                                'for the required syntax and data format.') from error
 
         # Obtain the budget(s) and ensure validity:
         budget: List[int] = []
