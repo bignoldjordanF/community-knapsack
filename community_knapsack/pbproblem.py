@@ -1,6 +1,7 @@
 from .pbalgorithm import _PBAlgorithm,\
     PBSingleAlgorithm,\
     PBMultiAlgorithm
+from .pbresult import PBResult
 from . import pbutils
 
 from typing import Sequence, Union, List
@@ -124,10 +125,17 @@ class PBSingleProblem(_PBProblem):
             self.num_projects,
             self.utilities
         )
-        allocation = algorithm(self.budget, self.costs, values)
+        allocation, value = algorithm(self.budget, self.costs, values)
 
         end_time: float = default_timer()
-        return allocation[0], allocation[1]
+
+        return PBResult(
+            allocation=[self.projects[idx] for idx in allocation],
+            value=value,
+            runtime=(end_time - start_time) * 1000,
+            algorithm=algorithm.name,
+            approximate=algorithm.is_approximate()
+        )
 
 
 class PBMultiProblem(_PBProblem):
@@ -188,7 +196,14 @@ class PBMultiProblem(_PBProblem):
             self.num_projects,
             self.utilities
         )
-        allocation = algorithm(self.budget, self.costs, values)
+        allocation, value = algorithm(self.budget, self.costs, values)
 
         end_time: float = default_timer()
-        return allocation[0], allocation[1]
+
+        return PBResult(
+            allocation=[self.projects[idx] for idx in allocation],
+            value=value,
+            runtime=(end_time - start_time) * 1000,
+            algorithm=algorithm.name,
+            approximate=algorithm.is_approximate()
+        )
