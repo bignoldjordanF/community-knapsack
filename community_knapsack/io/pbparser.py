@@ -1,4 +1,6 @@
-from typing import List, Dict, Tuple
+from community_knapsack import PBSingleProblem, \
+    PBMultiProblem
+from typing import List, Dict
 from .. import pbutils
 
 import os
@@ -19,13 +21,16 @@ class PBParser:
     def __init__(self, file_path: str):
         """
         Instantiates a parser object and parses the .pb file argument into a PBMultiProblem or
-        PBProblem object for solving.
+        PBProblem object for solving. Please note that the .pb file should be in the format
+        described by Stolicki et. al. (http://pabulib.org/format), or otherwise errors will
+        occur during parsing.
+
         :param file_path: The file path to the .pb file.
         """
         self.file_path: str = file_path
-        self._problem: 'PBMultiProblem' = self.parse()
+        self._problem: PBMultiProblem = self.parse()
 
-    def parse(self) -> 'PBMultiProblem':
+    def parse(self) -> PBMultiProblem:
         """
         This function is automatically called by the constructor and parses a .pb file into
         a PBMultiProblem instance for solving. You should only call this function if you
@@ -96,7 +101,7 @@ class PBParser:
             budget.append(int(str_budget))
 
         if not budget:
-            raise PBParserError('There were zero budgets found for the .pb problem.')
+            raise PBParserError('There were zero budgets found in the .pb file.')
 
         # Obtain the vote type and ensure validity:
         vote_type: str = _metadata['vote_type']
@@ -189,7 +194,7 @@ class PBParser:
             voters=voters,
         )
 
-    def problem(self) -> 'PBSingleProblem':
+    def problem(self) -> PBSingleProblem:
         """
         Retrieves a single budget (typical) PBProblem object obtained from parsing the .pb file. This
         will always work for any valid .pb file, but note that it will remove any budgets after the first
@@ -198,7 +203,7 @@ class PBParser:
 
         :return: A PBProblem object containing the relevant data from the .pb file for solving.
         """
-        multi_problem: 'PBMultiProblem' = self.multi_problem()
+        multi_problem: PBMultiProblem = self.multi_problem()
         return PBSingleProblem(
             num_projects=multi_problem.num_projects,
             num_voters=multi_problem.num_voters,
@@ -209,7 +214,7 @@ class PBParser:
             voters=multi_problem.voters
         )
 
-    def multi_problem(self) -> 'PBMultiProblem':
+    def multi_problem(self) -> PBMultiProblem:
         """
         Retrieves a multi-budget PBMultiProblem object obtained from parsing the .pb file. This will
         always work for any valid .pb file, but note that solving the problem exactly will be slower
