@@ -1,6 +1,5 @@
-import community_knapsack.io.pbparser
-from community_knapsack import PBParser,\
-    PBSingleProblem, \
+from community_knapsack.io.pbparser import PBParser, PBParserError
+from community_knapsack import PBSingleProblem, \
     PBMultiProblem, \
     PBSingleAlgorithm, \
     PBMultiAlgorithm
@@ -13,37 +12,37 @@ class TestPBParsing:
 
     def test_bad_file_path(self):
         """The parser should raise an error when a bad .pb file path is entered."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('bad_file_path.pb')
 
     def test_bad_syntax(self):
         """The parser should raise an error when a .pb (csv) file has bad syntax."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_syntax.pb')
 
     def test_bad_budget(self):
         """The parser should raise an error when a non-numeric budget is entered."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_budget.pb')
 
     def test_missing_budget(self):
         """The parser should raise an error when zero budgets are entered."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/missing_budget.pb')
 
     def test_bad_vote_type(self):
         """The parser should raise an error when a bad vote type is entered."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_vote_type.pb')
 
     def test_missing_cost(self):
         """The parser should raise an error when a project has no cost."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/missing_cost.pb')
 
     def test_bad_cost(self):
         """The parser should raise an error when a project has the wrong number of costs."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_cost.pb')
 
     def test_bad_selected(self):
@@ -53,24 +52,24 @@ class TestPBParsing:
 
     def test_duplicate_vote(self):
         """The parser should raise an error when a voter has voted for the same project more than once."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/duplicate_vote.pb')
 
     def test_bad_votes_points(self):
         """The parser should raise an error when a voter has a different number of votes to points in
         cumulative or scoring voting types."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_vote_points.pb')
 
     def test_bad_vote(self):
         """The parser should raise an error when a voter votes for a non-existent project."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_vote.pb')
 
     def test_bad_points(self):
         """The parser should raise an error when points given to a project are non-positive integers in
         cumulative or scoring voting types."""
-        with pytest.raises(community_knapsack.io.pbparser.PBParserError):
+        with pytest.raises(PBParserError):
             PBParser('resources/tests/pb/bad_points.pb')
 
     def test_success(self):
