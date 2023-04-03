@@ -3,5 +3,5 @@ from .pbproblem import PBSingleProblem,\
 from .pbalgorithm import PBSingleAlgorithm, \
     PBMultiAlgorithm
 from .pbresult import PBResult
-from .io import PBParser
+from .io import PBParser, PBWriter
 from . import solvers
