@@ -20,9 +20,10 @@ class PBWriter:
 
     def _write(self, problem: PBMultiProblem):
         """
+        Writes a PBMultiProblem object to a .pb file to store the instance data. The .pb
+        file will be found at the `file_path` entered in the constructor.
 
-        :param problem:
-        :return:
+        :param problem: The PBMultiProblem object to be written to `file_path`.
         """
         # Prepare Meta
         meta_header: List[str] = ['key', 'value']
@@ -81,9 +82,11 @@ class PBWriter:
 
     def write(self, problem: Union[PBSingleProblem, PBMultiProblem]):
         """
+        Writes a PBSingleProblem or PBMultiProblem object to a .pb file to
+        store the instance data. The .pb file will be found at the `file_path`
+        entered in the constructor.
 
-        :param problem:
-        :return:
+        :param problem: The PBSingleProblem or PBMultiProblem object to be written to `file_path`.
         """
         if isinstance(problem, PBSingleProblem):
             return self._write(PBMultiProblem(
