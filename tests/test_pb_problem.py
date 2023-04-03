@@ -77,6 +77,24 @@ class TestPBSingleProblem:
                 voters=[1, 2]
             )
 
+    def test_success(self):
+        """Ensures a valid PBSingleProblem can be created successfully, without errors or warnings."""
+        PBSingleProblem(
+            num_projects=5,
+            num_voters=5,
+            budget=100,
+            costs=[20, 50, 75, 40, 45],
+            utilities=[
+                [1, 0, 1, 1, 1],
+                [0, 1, 1, 0, 0],
+                [0, 0, 1, 0, 1],
+                [1, 1, 0, 1, 0],
+                [0, 0, 0, 1, 1]
+            ],
+            projects=['30', '44', '20', '25', '22'],
+            voters=[1, 2, 3, 4, 5]
+        )
+
 
 class TestPBMultiProblem:
     """Ensures that instantiating PBMultiProblem objects raise helpful errors and warnings when
@@ -107,3 +125,21 @@ class TestPBMultiProblem:
                 projects=[1, 2],
                 voters=[1, 2]
             )
+
+    def test_success(self):
+        """Ensures a valid PBMultiProblem can be created successfully, without errors or warnings."""
+        PBMultiProblem(
+            num_projects=5,
+            num_voters=5,
+            budget=[100, 200],
+            costs=[[20, 50, 75, 40, 45], [50, 75, 100, 90, 80]],
+            utilities=[
+                [1, 0, 1, 1, 1],
+                [0, 1, 1, 0, 0],
+                [0, 0, 1, 0, 1],
+                [1, 1, 0, 1, 0],
+                [0, 0, 0, 1, 1]
+            ],
+            projects=['30', '44', '20', '25', '22'],
+            voters=[1, 2, 3, 4, 5]
+        )
