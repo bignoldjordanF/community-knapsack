@@ -16,7 +16,7 @@ class PBParserError(Exception):
 
 
 class PBParser:
-    """Parses .pb files containing participatory budgeting instances into PBProblem or
+    """Parses .pb files containing participatory budgeting instances into PBSingleProblem or
     PBMultiProblem instances for solving. The .pb files should be in the format described
     by Stolicki et. al. (http://pabulib.org/format)."""
 
