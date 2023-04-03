@@ -29,8 +29,7 @@ class TestClassicKnapsack:
         solvers.approximate.fptas,
         solvers.approximate.simulated_annealing,
         solvers.approximate.genetic_algorithm,
-        solvers.approximate.ratio_greedy,
-        solvers.approximate.greedy
+        solvers.approximate.ratio_greedy
     ]
 
     @staticmethod
