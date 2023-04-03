@@ -128,9 +128,11 @@ class TestPBParsing:
         assert problem.voters == ['1', '2', '3', '4', '5']
 
     def test_single_solve_success(self):
+        """Ensures parsing a valid single .pb file results in the correct allocation value."""
         problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
         assert problem.solve(PBSingleAlgorithm.BRUTE_FORCE).value == 7
 
     def test_multi_solve_success(self):
+        """Ensures parsing a valid multi .pb file results in the correct allocation value."""
         problem: PBMultiProblem = PBParser('resources/tests/pb/multi_valid.pb').multi_problem()
         assert problem.solve(PBMultiAlgorithm.BRUTE_FORCE).value == 5
