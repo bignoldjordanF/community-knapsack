@@ -1,7 +1,9 @@
 import community_knapsack.io.pbparser
 from community_knapsack import PBParser,\
     PBSingleProblem, \
-    PBMultiProblem
+    PBMultiProblem, \
+    PBSingleAlgorithm, \
+    PBMultiAlgorithm
 import pytest
 
 
@@ -117,3 +119,11 @@ class TestPBParsing:
         ]
         assert problem.projects == ['5', '6', '7', '8', '9']
         assert problem.voters == ['1', '2', '3', '4', '5']
+
+    def test_single_solve_success(self):
+        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
+        assert problem.solve(PBSingleAlgorithm.BRUTE_FORCE) == ([0, 3, 4], 7)
+
+    def test_multi_solve_success(self):
+        problem: PBMultiProblem = PBParser('resources/tests/pb/valid.pb').multi_problem()
+        assert problem.solve(PBMultiAlgorithm.BRUTE_FORCE) == ([0, 3, 4], 7)
