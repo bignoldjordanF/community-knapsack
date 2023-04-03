@@ -18,7 +18,7 @@ class PBWriter:
         """
         self.file_path: str = file_path
 
-    def _write(self, problem: PBMultiProblem):
+    def _write(self, problem: PBMultiProblem) -> None:
         """
         Writes a PBMultiProblem object to a .pb file to store the instance data. The .pb
         file will be found at the `file_path` entered in the constructor.
@@ -80,7 +80,7 @@ class PBWriter:
             for row in voters:
                 writer.writerow(row)
 
-    def write(self, problem: Union[PBSingleProblem, PBMultiProblem]):
+    def write(self, problem: Union[PBSingleProblem, PBMultiProblem]) -> None:
         """
         Writes a PBSingleProblem or PBMultiProblem object to a .pb file to
         store the instance data. The .pb file will be found at the `file_path`

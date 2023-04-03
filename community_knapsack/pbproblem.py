@@ -70,7 +70,7 @@ class _PBProblem(ABC):
         self.voters = voters
 
     @abstractmethod
-    def solve(self, algorithm: _PBAlgorithm):
+    def solve(self, algorithm: _PBAlgorithm) -> PBResult:
         pass
 
 
@@ -110,7 +110,7 @@ class PBSingleProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self, algorithm: PBSingleAlgorithm):
+    def solve(self, algorithm: PBSingleAlgorithm) -> PBResult:
         """
         Reduces a one-dimensional (single budget) participatory budgeting problem to the classic binary
         knapsack problem and solves it using the specified algorithm, returning a budget allocation.
@@ -180,7 +180,7 @@ class PBMultiProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self, multi_algorithm: PBMultiAlgorithm):
+    def solve(self, multi_algorithm: PBMultiAlgorithm) -> PBResult:
         """
         Reduces a multidimensional (multiple budget) participatory budgeting problem to the
         multidimensional binary knapsack problem and solves it using the specified algorithm,
