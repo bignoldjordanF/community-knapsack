@@ -2,9 +2,22 @@ from community_knapsack import pbutils
 import pytest
 
 
-class TestPBUtils:
-    """Ensures the utility functions return the correct results and raise helpful errors
-    and warnings when the input is incorrect."""
+class TestVoteAggregation:
+    """Ensures the vote aggregation utility functions return the correct results and
+    raise helpful errors and warnings when the input is incorrect."""
+
+    def test_utilitarian_bad_utilities(self):
+        with pytest.raises(ValueError):
+            pbutils.aggregate_utilitarian(5, [[0, 1, 1, 0, 1], [0, 1]])
+
+    def test_utilitarian_aggregation(self):
+        assert pbutils.aggregate_utilitarian(5, [[0, 1, 1, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1]]) == \
+               [1, 2, 2, 1, 2]
+
+
+class TestVoteConversion:
+    """Ensures the vote conversion utility functions return the correct results and raise
+    helpful errors and warnings when the input is incorrect."""
 
     def test_bad_vote_type(self):
         """Ensures that the vote type must be one of approval, cumulative, scoring or ordinal."""
