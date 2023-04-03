@@ -1,4 +1,4 @@
-from community_knapsack import PBParser, PBSingleProblem, PBSingleAlgorithm, pbutils
+from community_knapsack import PBParser, PBSingleProblem, PBSingleAlgorithm
 
 
 if __name__ == '__main__':
