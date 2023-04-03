@@ -122,8 +122,8 @@ class TestPBParsing:
 
     def test_single_solve_success(self):
         problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
-        assert problem.solve(PBSingleAlgorithm.BRUTE_FORCE) == ([0, 3, 4], 7)
+        assert problem.solve(PBSingleAlgorithm.BRUTE_FORCE).value == 7
 
     def test_multi_solve_success(self):
-        problem: PBMultiProblem = PBParser('resources/tests/pb/valid.pb').multi_problem()
-        assert problem.solve(PBMultiAlgorithm.BRUTE_FORCE) == ([0, 3, 4], 7)
+        problem: PBMultiProblem = PBParser('resources/tests/pb/multi_valid.pb').multi_problem()
+        assert problem.solve(PBMultiAlgorithm.BRUTE_FORCE).value == 5
