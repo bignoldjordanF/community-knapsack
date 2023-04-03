@@ -7,6 +7,7 @@ from . import pbutils
 from typing import Sequence, Union, List
 from abc import ABC, abstractmethod
 from timeit import default_timer
+import multiprocessing as mp
 import warnings
 
 
@@ -70,8 +71,48 @@ class _PBProblem(ABC):
         self.voters = voters
 
     @abstractmethod
-    def solve(self, algorithm: _PBAlgorithm) -> PBResult:
+    def _worker(self, algorithm: _PBAlgorithm, values: List[int], result_queue: mp.Queue):
         pass
+
+    @abstractmethod
+    def solve(self, algorithm: _PBAlgorithm, timeout: float) -> PBResult:
+        start_time: float = default_timer()
+
+        # Aggregate the utilities via utilitarian welfare:
+        values: List[int] = pbutils.aggregate_utilitarian(
+            self.num_projects,
+            self.utilities
+        )
+
+        # Create multiprocessing queue to receive allocation:
+        result_queue: mp.Queue = mp.Queue()
+
+        # Start the algorithm process and wait until the timeout is reached:
+        process: mp.Process = mp.Process(target=self._worker, args=(algorithm, values, result_queue))
+        process.start()
+        process.join(timeout if timeout >= 0 else None)
+
+        # Terminate the process if it is still running and return the empty allocation:
+        if process.is_alive():
+            process.terminate()
+            warnings.warn(f'The {algorithm.name} algorithm did not finish within the {timeout} second timeout limit. '
+                          f'Try increasing the timeout or using a different algorithm (such as an approximation '
+                          f'scheme).')
+            return PBResult([], 0, 0.0, algorithm.name, algorithm.is_approximate())
+
+        # Otherwise, obtain the result from the result queue:
+        allocation, value = result_queue.get()
+        result_queue.close()
+
+        end_time: float = default_timer()
+
+        return PBResult(
+            allocation=[self.projects[idx] for idx in allocation],
+            value=value,
+            runtime=(end_time - start_time) * 1000,
+            algorithm=algorithm.name,
+            approximate=algorithm.is_approximate()
+        )
 
 
 class PBSingleProblem(_PBProblem):
@@ -110,32 +151,20 @@ class PBSingleProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self, algorithm: PBSingleAlgorithm) -> PBResult:
+    def _worker(self, algorithm: PBSingleAlgorithm, values: List[int], result_queue: mp.Queue):
+        allocation, value = algorithm(self.budget, self.costs, values)
+        result_queue.put((allocation, value))
+
+    def solve(self, algorithm: PBSingleAlgorithm, timeout: float = -1) -> PBResult:
         """
         Reduces a one-dimensional (single budget) participatory budgeting problem to the classic binary
         knapsack problem and solves it using the specified algorithm, returning a budget allocation.
 
         :param algorithm: The name of the algorithm that should be used to solve the problem.
+        :param timeout: The maximum number of seconds before the algorithm aborts, or -1 for no timeout.
         :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
-        start_time: float = default_timer()
-
-        # Aggregate the utilities via utilitarian welfare:
-        values: List[int] = pbutils.aggregate_utilitarian(
-            self.num_projects,
-            self.utilities
-        )
-        allocation, value = algorithm(self.budget, self.costs, values)
-
-        end_time: float = default_timer()
-
-        return PBResult(
-            allocation=[self.projects[idx] for idx in allocation],
-            value=value,
-            runtime=(end_time - start_time) * 1000,
-            algorithm=algorithm.name,
-            approximate=algorithm.is_approximate()
-        )
+        return super().solve(algorithm, timeout)
 
 
 class PBMultiProblem(_PBProblem):
@@ -180,30 +209,18 @@ class PBMultiProblem(_PBProblem):
         self.budget = budget
         self.costs = costs
 
-    def solve(self, multi_algorithm: PBMultiAlgorithm) -> PBResult:
+    def _worker(self, algorithm: PBMultiAlgorithm, values: List[int], result_queue: mp.Queue):
+        allocation, value = algorithm(self.budget, self.costs, values)
+        result_queue.put((allocation, value))
+
+    def solve(self, multi_algorithm: PBMultiAlgorithm, timeout: float = -1) -> PBResult:
         """
         Reduces a multidimensional (multiple budget) participatory budgeting problem to the
         multidimensional binary knapsack problem and solves it using the specified algorithm,
         returning a budget allocation.
 
         :param multi_algorithm: The name of the algorithm that should be used to solve the problem.
+        :param timeout: The maximum number of seconds before the algorithm aborts, or -1 for no timeout.
         :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
-        start_time: float = default_timer()
-
-        # Aggregate the utilities via utilitarian welfare:
-        values: List[int] = pbutils.aggregate_utilitarian(
-            self.num_projects,
-            self.utilities
-        )
-        allocation, value = multi_algorithm(self.budget, self.costs, values)
-
-        end_time: float = default_timer()
-
-        return PBResult(
-            allocation=[self.projects[idx] for idx in allocation],
-            value=value,
-            runtime=(end_time - start_time) * 1000,
-            algorithm=multi_algorithm.name,
-            approximate=multi_algorithm.is_approximate()
-        )
+        return super().solve(multi_algorithm, timeout)

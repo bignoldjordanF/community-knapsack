@@ -3,7 +3,9 @@ from enum import Enum
 
 
 class _PBAlgorithm(Enum):
-    pass
+
+    def is_approximate(self) -> bool:
+        pass
 
 
 class PBSingleAlgorithm(_PBAlgorithm):
