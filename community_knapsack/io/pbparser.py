@@ -41,7 +41,7 @@ class PBParser:
         if not os.path.isfile(self.file_path):
             raise PBParserError(f'The path {self.file_path} does not contain a .pb file.')
 
-        # The data is firstly parsed into dictionaries:
+        # The data is first parsed into dictionaries:
         _metadata: Dict[str, str] = {
             'budget': [],
             'vote_type': ''
@@ -146,7 +146,6 @@ class PBParser:
         voters: List[str] = []
         utilities: List[List[int]] = [[] for _ in range(len(_voters))]
 
-        voter_idx: int = 0
         for vid, data in _voters.items():
             # Add the voter to the list:
             voters.append(vid)
@@ -179,8 +178,6 @@ class PBParser:
 
             # Convert them to utility values and append to list:
             utilities.append(pbutils.vote_to_utility(len(projects), vote_type, _votes, _points))
-
-            voter_idx += 1
 
         return PBMultiProblem(
             num_projects=len(projects),
