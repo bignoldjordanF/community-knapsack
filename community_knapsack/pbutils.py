@@ -1,7 +1,28 @@
-from typing import List
+from typing import List, Sequence
 
 
-def ordinal_to_utility(num_projects: int, votes: List[int], min_vote_length: int = -1, max_vote_length: int = -1):
+def aggregate_utilitarian(num_projects: int, utilities: Sequence[Sequence[int]]):
+    """
+    Aggregates the multi-agent utilities over projects by summing the votes for each project into
+    a one-dimensional list of values.
+
+    :param num_projects: The number of projects in the instance (and thus `utilities`).
+    :param utilities: A list of lists of utilities for each voter over the projects.
+    :return: A one-dimensional list of values for each project, i.e., values[i] is the value for project i.
+    """
+    values: List[int] = [0] * num_projects
+
+    for vid, utility in enumerate(utilities):
+        if len(utility) != num_projects:
+            raise ValueError(f'Voter {vid} has utilities for {len(utility)} projects but expected utilities '
+                             f'for {num_projects} projects.')
+        for pid, u in enumerate(utility):
+            values[pid] += u
+
+    return values
+
+
+def ordinal_to_utility(num_projects: int, votes: Sequence[int], min_vote_length: int = -1, max_vote_length: int = -1):
     """
     Converts a list of ordinal preferences `votes` ordered from most to least preferred into a utility
     vector or list over the projects. This function should be called on a voter-by-voter basis, where
@@ -61,7 +82,7 @@ def ordinal_to_utility(num_projects: int, votes: List[int], min_vote_length: int
     return utility
 
 
-def vote_to_utility(num_projects: int, vote_type: str, votes: List[int], points: List[int] = None):
+def vote_to_utility(num_projects: int, vote_type: str, votes: Sequence[int], points: Sequence[int] = None):
     """
     Converts a list of votes (and points in cumulative and scoring voting) into a utility vector or list
     over the projects. This function should be called on a voter-by-voter basis, where votes contains
