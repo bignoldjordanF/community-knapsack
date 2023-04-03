@@ -11,18 +11,21 @@ class PBGenerator:
 
     def __init__(self, seed: int = -1):
         """
+        Instantiates a PBGenerator object with an optional seed value (for random generation) for generating
+        single and multi-budget participatory budgeting instances.
 
-        :param seed:
+        :param seed: The random seed used to generate the problems. Use the same seed to obtain the same
+        problems.
         """
         self._random = Random()
         if seed != -1:
             self._random.seed(seed)
 
-    def _generate_int(self, bound: Tuple[int, int]):
+    def _generate_int(self, bound: Tuple[int, int]) -> int:
         """
-
-        :param bound:
-        :return:
+        Generates a random integer within a minimum and maximum bound.
+        :param bound: The bounds of generation as a tuple (min_bound, max_bound).
+        :return: A random integer within the bounds supplied.
         """
         if bound[0] > bound[1]:
             raise ValueError(f'The lower bound `{bound[0]}` must be less than or '
@@ -36,11 +39,13 @@ class PBGenerator:
             utility_bound: Tuple[int, int],
     ) -> List[List[int]]:
         """
+        Generates a random 2-dimensional list of utilities for each voter over each project. Each
+        utility over a project is randomly generated within the utility bound.
 
-        :param num_projects:
-        :param num_voters:
-        :param utility_bound:
-        :return:
+        :param num_projects: The number of projects to generate utilities for.
+        :param num_voters: The number of voters to generate utilities for.
+        :param utility_bound: The bounds of possible utilities as a tuple (min_bound, max_bound).
+        :return: A two-dimensional list of utilities for each voter over each project.
         """
         return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
 
@@ -53,13 +58,16 @@ class PBGenerator:
             utility_bound: Tuple[int, int] = (0, 1),
     ) -> PBSingleProblem:
         """
+        Creates a PBSingleProblem object containing randomly generated instance data, i.e., a random
+        number of projects and voters, a random budget, random costs for each project and random
+        utilities all within some specified boundaries.
 
-        :param num_projects_bound:
-        :param num_voters_bound:
-        :param budget_bound:
-        :param cost_bound:
-        :param utility_bound:
-        :return:
+        :param num_projects_bound: The minimum and maximum possible number of projects.
+        :param num_voters_bound: The minimum and maximum possible number of voters.
+        :param budget_bound: The minimum and maximum possible budget.
+        :param cost_bound: The minimum and maximum cost for each project.
+        :param utility_bound: The minimum and maximum utility that each voter derives from each project.
+        :return: A PBSingleProblem object containing the randomly generated instance.
         """
         num_projects: int = self._generate_int(num_projects_bound)
         num_voters: int = self._generate_int(num_voters_bound)
@@ -84,13 +92,16 @@ class PBGenerator:
             utility_bound: Tuple[int, int] = (0, 1),
     ) -> PBMultiProblem:
         """
+        Creates a PBMultiProblem object containing randomly generated instance data, i.e., a random
+        number of projects and voters, random budgets, random costs for each project in each dimension
+        (for each budget) and random utilities all within some specified boundaries.
 
-        :param num_projects_bound:
-        :param num_voters_bound:
-        :param budget_bound:
-        :param cost_bound:
-        :param utility_bound:
-        :return:
+        :param num_projects_bound: The minimum and maximum possible number of projects.
+        :param num_voters_bound: The minimum and maximum possible number of voters.
+        :param budget_bound: A sequence of minimum and maximum bounds for each budget.
+        :param cost_bound: A sequence of minimum and maximum bounds for each project cost for each budget.
+        :param utility_bound: The minimum and maximum utility that each voter derives from each project.
+        :return: A PBMultiProblem object containing the randomly generated instance.
         """
         num_projects: int = self._generate_int(num_projects_bound)
         num_voters: int = self._generate_int(num_voters_bound)
