@@ -285,3 +285,6 @@ pyrightconfig.json
 
 # Ignore .pb files
 resources/pabulib/*/*.pb
+
+# Ignore misc folder
+miscellaneous/
