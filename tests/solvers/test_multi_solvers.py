@@ -8,7 +8,7 @@ class TestMultiDimensionalKnapsack:
     results."""
 
     knapsack_test_file_paths: List[str] = [
-        'resources/tests/multi/p01.txt',
+        'resources/tests/knapsack/multi/p01.txt',
     ]
 
     exact_solver_functions: List[Callable] = [

@@ -7,13 +7,13 @@ class TestClassicKnapsack:
     """Ensures the solver algorithms for the classic knapsack problem produce correct and/or reasonable results."""
 
     knapsack_test_file_paths: List[str] = [
-        'resources/tests/single/p01.txt',
-        'resources/tests/single/p02.txt',
-        'resources/tests/single/p03.txt',
-        'resources/tests/single/p04.txt',
-        'resources/tests/single/p05.txt',
-        'resources/tests/single/p06.txt',
-        'resources/tests/single/p07.txt'
+        'resources/tests/knapsack/single/p01.txt',
+        'resources/tests/knapsack/single/p02.txt',
+        'resources/tests/knapsack/single/p03.txt',
+        'resources/tests/knapsack/single/p04.txt',
+        'resources/tests/knapsack/single/p05.txt',
+        'resources/tests/knapsack/single/p06.txt',
+        'resources/tests/knapsack/single/p07.txt'
         # 'resources/tests/single/p08.txt',  # passes but is very slow!
     ]
 
