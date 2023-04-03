@@ -34,17 +34,14 @@ class PBGenerator:
             num_projects: int,
             num_voters: int,
             utility_bound: Tuple[int, int],
-            non_uniform: bool
     ) -> List[List[int]]:
         """
 
         :param num_projects:
         :param num_voters:
         :param utility_bound:
-        :param non_uniform:
         :return:
         """
-        # TODO: Add non-uniform utilities!
         return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
 
     def generate_single_problem(
@@ -54,7 +51,6 @@ class PBGenerator:
             budget_bound: Tuple[int, int],
             cost_bound: Tuple[int, int],
             utility_bound: Tuple[int, int] = (0, 1),
-            non_uniform: bool = False,
     ) -> PBSingleProblem:
         """
 
@@ -63,14 +59,13 @@ class PBGenerator:
         :param budget_bound:
         :param cost_bound:
         :param utility_bound:
-        :param non_uniform:
         :return:
         """
         num_projects: int = self._generate_int(num_projects_bound)
         num_voters: int = self._generate_int(num_voters_bound)
         budget: int = self._generate_int(budget_bound)
         costs: List[int] = [self._generate_int(cost_bound) for _ in range(num_projects)]
-        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound, non_uniform)
+        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound)
 
         return PBSingleProblem(
             num_projects=num_projects,
@@ -87,7 +82,6 @@ class PBGenerator:
             budget_bound: Sequence[Tuple[int, int]],
             cost_bound: Sequence[Tuple[int, int]],
             utility_bound: Tuple[int, int] = (0, 1),
-            non_uniform: bool = False
     ) -> PBMultiProblem:
         """
 
@@ -96,7 +90,6 @@ class PBGenerator:
         :param budget_bound:
         :param cost_bound:
         :param utility_bound:
-        :param non_uniform:
         :return:
         """
         num_projects: int = self._generate_int(num_projects_bound)
@@ -109,7 +102,7 @@ class PBGenerator:
             [self._generate_int(cost_bound[dim]) for _ in range(num_projects)]
             for dim in range(len(budget_bound))
         ]
-        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound, non_uniform)
+        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound)
 
         return PBMultiProblem(
             num_projects=num_projects,

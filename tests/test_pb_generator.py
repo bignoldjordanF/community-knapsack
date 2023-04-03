@@ -23,10 +23,10 @@ class TestPBGenerator:
         with pytest.raises(ValueError):
             generator._generate_int((20, 10))
 
-    def test_non_uniform_generate_utilities(self):
+    def test_generate_utilities(self):
         """Ensures that non-uniform utility generation produces the expected results."""
         generator: PBGenerator = PBGenerator(seed=5)
-        utilities: List[List[int]] = generator._generate_utilities(5, 5, (0, 1), False)
+        utilities: List[List[int]] = generator._generate_utilities(5, 5, (0, 1))
         assert utilities == [
             [1, 1, 0, 1, 0],
             [0, 0, 0, 1, 1],
