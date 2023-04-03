@@ -77,7 +77,7 @@ class TestPBParsing:
 
     def test_success(self):
         """Ensures a valid .pb file can be parsed successfully, without errors or warnings."""
-        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
+        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').single_problem()
         assert problem.num_projects == 5
         assert problem.num_voters == 5
         assert problem.budget == 100
@@ -129,7 +129,7 @@ class TestPBParsing:
 
     def test_single_solve_success(self):
         """Ensures parsing a valid single .pb file results in the correct allocation value."""
-        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').problem()
+        problem: PBSingleProblem = PBParser('resources/tests/pb/valid.pb').single_problem()
         assert problem.solve(PBSingleAlgorithm.BRUTE_FORCE).value == 7
 
     def test_multi_solve_success(self):

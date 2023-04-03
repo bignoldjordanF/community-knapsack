@@ -30,7 +30,7 @@ class TestPBWriting:
         writer.write(problem)
 
         parser: PBParser = PBParser(file_path)
-        problem = parser.problem()
+        problem = parser.single_problem()
 
         assert problem.num_projects == 5
         assert problem.num_voters == 5

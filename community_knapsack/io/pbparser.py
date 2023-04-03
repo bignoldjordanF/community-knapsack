@@ -200,7 +200,7 @@ class PBParser:
             voters=voters,
         )
 
-    def problem(self) -> PBSingleProblem:
+    def single_problem(self) -> PBSingleProblem:
         """
         Retrieves a single budget (typical) PBProblem object obtained from parsing the .pb file. This
         will always work for any valid .pb file, but note that it will remove any budgets after the first
