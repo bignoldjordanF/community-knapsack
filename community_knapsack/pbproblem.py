@@ -64,11 +64,11 @@ class _PBProblem(ABC):
                 raise PBProblemError(f'Voter {vid} has utilities for {len(utility)} projects but expected utilities '
                                      f'for {num_projects} projects.')
 
-        self.num_projects = num_projects
-        self.num_voters = num_voters
-        self.utilities = utilities
-        self.projects = projects
-        self.voters = voters
+        self.num_projects: int = num_projects
+        self.num_voters: int = num_voters
+        self.utilities: Sequence[Sequence[int]] = utilities
+        self.projects: Sequence[Union[str, int]] = projects
+        self.voters: Sequence[Union[str, int]] = voters
 
     @abstractmethod
     def _worker(self, algorithm: _PBAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
@@ -156,8 +156,8 @@ class PBSingleProblem(_PBProblem):
         if self.num_projects != len(costs):
             raise PBProblemError(f'There were {len(costs)} project costs found but {self.num_projects} expected.')
 
-        self.budget = budget
-        self.costs = costs
+        self.budget: int = budget
+        self.costs: Sequence[int] = costs
 
     def _worker(self, algorithm: PBSingleAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
         """
@@ -222,8 +222,8 @@ class PBMultiProblem(_PBProblem):
                 raise PBProblemError(f'There were {len(cost)} costs found in dimension {dim} but {num_projects} '
                                      f'expected.')
 
-        self.budget = budget
-        self.costs = costs
+        self.budget: Sequence[int] = budget
+        self.costs: Sequence[Sequence[int]] = costs
 
     def _worker(self, algorithm: PBMultiAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
         """
