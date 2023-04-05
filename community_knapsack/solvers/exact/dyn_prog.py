@@ -133,10 +133,10 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
     # the weight does not exceed the capacity:
     i: int = len(values)
     j: int = 0
-    m: int = 0
+    best_value: int = 0
     for v in range(sum(values), -1, -1):
         if matrix[num_items][v] <= capacity:
-            m = v
+            best_value = v
             j = v
             break
 
@@ -150,7 +150,7 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
             j -= values[i - 1]
         i -= 1
 
-    return allocation, m
+    return allocation, best_value
 
 
 def multi_dynamic_programming(
