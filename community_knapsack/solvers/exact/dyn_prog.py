@@ -21,8 +21,8 @@ def dynamic_programming(capacity: int, weights: List[int], values: List[int]) ->
     num_items: int = len(values)
 
     # Store the maximum value achievable for any sub-problem:
-    matrix: List[List[Tuple[List[int], int]]] = [
-        [([], 0) for _ in range(capacity + 1)]
+    matrix: List[List[int]] = [
+        [0 for _ in range(capacity + 1)]
         for _ in range(num_items + 1)
     ]
 
@@ -32,7 +32,7 @@ def dynamic_programming(capacity: int, weights: List[int], values: List[int]) ->
 
             # When excluding this item, the sub-problem solution is the maximum
             # value achievable with the first i-1 items and j capacity:
-            exclude: Tuple[List[int], int] = matrix[i - 1][j]
+            exclude: int = matrix[i - 1][j]
 
             if weights[i - 1] > j:
                 matrix[i][j] = exclude
@@ -42,17 +42,29 @@ def dynamic_programming(capacity: int, weights: List[int], values: List[int]) ->
             # value achievable with the first i-1 items and j-weights[i-1]
             # capacity, i.e., we must reduce the capacity because we include
             # this item:
-            include: Tuple[List[int], int] = matrix[i - 1][j - weights[i - 1]]
-            include_val: int = include[1] + values[i - 1]
+            include: int = matrix[i - 1][j - weights[i - 1]] + values[i - 1]
 
             # We only include the item if it can fit, otherwise we exclude it:
-            if include_val >= exclude[1]:
-                matrix[i][j] = (include[0] + [i - 1], include_val)
+            if include >= exclude:
+                matrix[i][j] = include
                 continue
 
             matrix[i][j] = exclude
 
-    return matrix[-1][-1]
+    best_value: int = matrix[-1][-1]
+    allocation: List[int] = []
+
+    # Backtrack the matrix to find an allocation
+    # with `best_value` overall value:
+    i: int = num_items
+    j: int = capacity
+    while i > 0 and j > 0:
+        if matrix[i][j] != matrix[i - 1][j]:
+            allocation.append(i - 1)
+            j -= weights[i - 1]
+        i -= 1
+
+    return allocation, best_value
 
 
 def dynamic_programming_min_weight(capacity: int, weights: List[int], values: List[int]) -> Tuple[List[int], int]:
@@ -75,8 +87,8 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
     value_sum: int = sum(values)
 
     # Store the minimum weight achievable for any sub-problem:
-    matrix: List[List[Tuple[List[int], Union[float, int]]]] = [
-        [([], 0) for _ in range(value_sum + 1)]
+    matrix: List[List[Union[int, float]]] = [
+        [0 for _ in range(value_sum + 1)]
         for _ in range(num_items + 1)
     ]
 
@@ -84,13 +96,13 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
     # A min. value requirement but no items
     # is invalid -> returns infinite weight.
     for v in range(value_sum + 1):
-        matrix[0][v] = ([], float('inf'))
+        matrix[0][v] = float('inf')
 
     # (Base Case 2)
     # No min. val requirement -> just take
     # the empty allocation -> return 0.
     for i in range(num_items + 1):
-        matrix[i][0] = ([], 0)
+        matrix[i][0] = 0
 
     # Iterate through all possible sub-problems:
     for i in range(1, num_items + 1):
@@ -98,7 +110,7 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
 
             # When excluding this item, the sub-problem solution is the minimum
             # weight achievable with the first i-1 items achieving value v:
-            exclude: Tuple[List[int], Union[float, int]] = matrix[i - 1][v]
+            exclude: Union[float, int] = matrix[i - 1][v]
 
             # if v < values[i - 1]:
             #     matrix[i][v] = exclude
@@ -107,25 +119,38 @@ def dynamic_programming_min_weight(capacity: int, weights: List[int], values: Li
             # When including this item, the sub-problem solution is the minimum
             # weight achievable with the first i-1 items achieving value v-values[i-1],
             # i.e., the value is reduced by the current item:
-            include: Tuple[List[int], Union[float, int]] = matrix[i - 1][v - values[i - 1]]
-            include_val: int = include[1] + weights[i - 1]
+            include: Union[float, int] = matrix[i - 1][v - values[i - 1]] + weights[i - 1]
 
             # The minimum of the weights found by including or excluding is taken
             # as the minimum weight for (i, v):
-            if include_val < exclude[1]:
-                matrix[i][v] = (include[0] + [i - 1], include_val)
+            if include < exclude:
+                matrix[i][v] = include
                 continue
 
             matrix[i][v] = exclude
 
-    # Backtrack the matrix to find the highest
-    # value for num_items items at which the
-    # weight does not exceed the capacity:
-    for v in range(value_sum, -1, -1):
-        if matrix[num_items][v][1] <= capacity:
-            return matrix[num_items][v][0], v
+    # Backtrack the matrix to find the highest value for num_items items at which
+    # the weight does not exceed the capacity:
+    i: int = len(values)
+    j: int = 0
+    m: int = 0
+    for v in range(sum(values), -1, -1):
+        if matrix[num_items][v] <= capacity:
+            m = v
+            j = v
+            break
 
-    return [], 0
+    # Backtrack the matrix to find an allocation
+    # with `m` overall value, i.e., the highest
+    # possible valid overall value:
+    allocation: List[int] = []
+    while i > 0 and j > 0:
+        if matrix[i][j] < matrix[i - 1][j]:
+            allocation.append(i - 1)
+            j -= values[i - 1]
+        i -= 1
+
+    return allocation, m
 
 
 def multi_dynamic_programming(
