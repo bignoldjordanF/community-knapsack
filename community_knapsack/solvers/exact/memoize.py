@@ -19,22 +19,22 @@ def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
     num_items: int = len(values)
 
     # Store the maximum value achievable for any sub-problem:
-    matrix: List[List[Tuple[List[int], int]]] = [
-        [([], -1) for _ in range(capacity + 1)]
+    matrix: List[List[int]] = [
+        [-1 for _ in range(capacity + 1)]
         for _ in range(num_items + 1)
     ]
 
-    def explore(i: int, j: int) -> Tuple[List[int], int]:
+    def explore(i: int, j: int) -> int:
         # Avoid re-computation through
         # memoization:
-        if matrix[i][j][1] != -1:
+        if matrix[i][j] != -1:
             return matrix[i][j]
 
         # (Base Case)
         # We have no more items or
         # capacity to consider:
         if i == 0 or j == 0:
-            matrix[i][j] = ([], 0)
+            matrix[i][j] = 0
             return matrix[i][j]
 
         # (Recursive Case 1)
@@ -48,15 +48,12 @@ def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
         # Include the current item if
         # and only if it leads to a
         # larger value than excluding:
-        exclude: Tuple[List[int], int] = explore(i - 1, j)
-        include: Tuple[List[int], int] = explore(i - 1, j - weights[i - 1])
+        exclude: int = explore(i - 1, j)
+        include: int = explore(i - 1, j - weights[i - 1]) + values[i - 1]
 
-        exclude_val: int = exclude[1]
-        include_val: int = include[1] + values[i - 1]
-
-        if include_val > exclude_val:
+        if include > exclude:
             # We store the updated allocation and value:
-            matrix[i][j] = (include[0] + [i - 1], include_val)
+            matrix[i][j] = include
             return matrix[i][j]
 
         matrix[i][j] = exclude
@@ -64,7 +61,20 @@ def memoization(capacity: int, weights: List[int], values: List[int]) -> Tuple[L
 
     # We first consider one (the last) item
     # and have full capacity:
-    return explore(num_items, capacity)
+    best_value: int = explore(num_items, capacity)
+    allocation: List[int] = []
+
+    # Backtrack the matrix to find an allocation
+    # with `best_value` overall value:
+    i: int = num_items
+    j: int = capacity
+    while i > 0 and j > 0:
+        if matrix[i][j] != matrix[i - 1][j]:
+            allocation.append(i - 1)
+            j -= weights[i - 1]
+        i -= 1
+
+    return allocation, best_value
 
 
 def multi_memoization(
