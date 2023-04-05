@@ -111,10 +111,10 @@ class _PBProblem(ABC):
             warnings.warn(f'The {algorithm.name} algorithm did not finish within the {timeout} second timeout limit. '
                           f'Try increasing the timeout or using a different algorithm (such as an approximation '
                           f'scheme).')
-            return PBResult([], 0, 0.0, algorithm.name, algorithm.is_approximate())
+            return PBResult([], 0, 0, 0.0, algorithm.name, algorithm.is_approximate())
 
         # Otherwise, obtain the result from the result queue:
-        allocation, value = result_queue.get()
+        allocation, value, cost = result_queue.get()
         result_queue.close()
 
         end_time: float = default_timer()
@@ -122,6 +122,7 @@ class _PBProblem(ABC):
         return PBResult(
             allocation=[self.projects[idx] for idx in allocation],
             value=value,
+            cost=cost,
             runtime=(end_time - start_time) * 1000,
             algorithm=algorithm.name,
             approximate=algorithm.is_approximate()
@@ -174,7 +175,9 @@ class PBSingleProblem(_PBProblem):
         :param result_queue: A result queue used to store the results from the solver.
         """
         allocation, value = algorithm(self.budget, self.costs, values)
-        result_queue.put((allocation, value))
+        result_queue.put((allocation, value, sum(
+            self.costs[idx] for idx in allocation
+        )))
 
     def solve(self, algorithm: PBSingleAlgorithm, timeout: float = -1) -> PBResult:
         """
@@ -240,7 +243,9 @@ class PBMultiProblem(_PBProblem):
         :param result_queue: A result queue used to store the results from the solver.
         """
         allocation, value = algorithm(self.budget, self.costs, values)
-        result_queue.put((allocation, value))
+        result_queue.put((allocation, value, [
+            sum(self.costs[dim][idx] for idx in allocation) for dim in range(len(self.budget))
+        ]))
 
     def solve(self, multi_algorithm: PBMultiAlgorithm, timeout: float = -1) -> PBResult:
         """
