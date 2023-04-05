@@ -70,6 +70,17 @@ class _PBProblem(ABC):
         self.projects: Sequence[Union[str, int]] = projects
         self.voters: Sequence[Union[str, int]] = voters
 
+        # Aggregate the utilities via utilitarian welfare:
+        self.values: List[int] = []
+        self.update_values()
+
+    def update_values(self):
+        # Aggregate the utilities via utilitarian welfare:
+        self.values = pbutils.aggregate_utilitarian(
+            self.num_projects,
+            self.utilities
+        )
+
     @abstractmethod
     def _worker(self, algorithm: _PBAlgorithm, values: List[int], result_queue: mp.Queue) -> None:
         pass
@@ -86,17 +97,11 @@ class _PBProblem(ABC):
         """
         start_time: float = default_timer()
 
-        # Aggregate the utilities via utilitarian welfare:
-        values: List[int] = pbutils.aggregate_utilitarian(
-            self.num_projects,
-            self.utilities
-        )
-
         # Create multiprocessing queue to receive allocation:
         result_queue: mp.Queue = mp.Queue()
 
         # Start the algorithm process and wait until the timeout is reached:
-        process: mp.Process = mp.Process(target=self._worker, args=(algorithm, values, result_queue))
+        process: mp.Process = mp.Process(target=self._worker, args=(algorithm, self.values, result_queue))
         process.start()
         process.join(timeout if timeout >= 0 else None)
 
