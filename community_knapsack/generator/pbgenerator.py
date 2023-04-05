@@ -27,6 +27,8 @@ class PBGenerator:
         :param bound: The bounds of generation as a tuple (min_bound, max_bound).
         :return: A random integer within the bounds supplied.
         """
+        if bound[0] < 0 or bound[1] < 0:
+            raise ValueError(f'The bounds ({bound[0]}, {bound[1]}) entered must be positive integers.')
         if bound[0] > bound[1]:
             raise ValueError(f'The lower bound `{bound[0]}` must be less than or '
                              f'equal to the upper bound `{bound[1]}`.')
@@ -47,7 +49,18 @@ class PBGenerator:
         :param utility_bound: The bounds of possible utilities as a tuple (min_bound, max_bound).
         :return: A two-dimensional list of utilities for each voter over each project.
         """
-        return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
+
+        weightings: List[float] = [self._random.random() for _ in range(num_projects)]
+        if utility_bound[0] == 0:
+            utility_bound = (1, utility_bound[1])
+        return [
+            [
+                self._generate_int(utility_bound) if self._random.random() < weightings[idx]**2 else 0
+                for idx in range(num_projects)
+            ] for _ in range(num_voters)
+        ]
+
+        # return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
 
     def generate_single_problem(
             self,
