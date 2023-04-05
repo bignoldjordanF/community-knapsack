@@ -27,9 +27,11 @@ def __genetic_algorithm(
     def create_population() -> List[List[int]]:
         """Generates an initial population of `population_size` `num_items`-sized chromosomes,
         where genes are randomly generated bits (0 or 1) representing item inclusion/exclusion."""
-        return [
+        # We initialise the first chromosome as the empty allocation in case
+        # we generate lots of invalid allocations:
+        return [[0 for _ in range(num_items)]] + [
             [random.randint(0, 1) for _ in range(num_items)]
-            for _ in range(population_size)
+            for _ in range(1, population_size)
         ]
 
     def selection() -> Tuple[List[int], ...]:
@@ -71,7 +73,7 @@ def __genetic_algorithm(
     population: List[List[int]] = create_population()
 
     # Create offspring `num_generations` times:
-    for _ in range(num_generations):
+    for i in range(num_generations):
         offspring: List[List[int]] = []
 
         # Generate as many offspring as there are chromosomes
