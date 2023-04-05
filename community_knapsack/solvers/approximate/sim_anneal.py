@@ -151,10 +151,10 @@ def simulated_annealing(
         capacity: int,
         weights: List[int],
         values: List[int],
-        initial_temperature: float = 1.0,
-        temperature_length: int = 50_000,
+        initial_temperature: float = 10.0,
+        temperature_length: int = 100,
         cooling_ratio: float = 0.9,
-        stopping_temperature: float = 0.5
+        stopping_temperature: float = 0.1
 ) -> Tuple[List[int], int]:
     """
     A relatively fast algorithm derived from the process of annealing in thermodynamics which provides
