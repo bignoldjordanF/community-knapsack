@@ -50,17 +50,17 @@ class PBGenerator:
         :return: A two-dimensional list of utilities for each voter over each project.
         """
 
-        # weightings: List[float] = [self._random.random() for _ in range(num_projects)]
-        # if utility_bound[0] == 0:
-        #     utility_bound = (1, utility_bound[1])
-        # return [
-        #     [
-        #         self._generate_int(utility_bound) if self._random.random() < weightings[idx]**2 else 0
-        #         for idx in range(num_projects)
-        #     ] for _ in range(num_voters)
-        # ]
+        weightings: List[float] = [self._random.random() for _ in range(num_projects)]
+        if utility_bound[0] == 0:
+            utility_bound = (1, utility_bound[1])
+        return [
+            [
+                self._generate_int(utility_bound) if self._random.random() < weightings[idx]**2 else 0
+                for idx in range(num_projects)
+            ] for _ in range(num_voters)
+        ]
 
-        return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
+        # return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
 
     def generate_single_problem(
             self,
@@ -68,7 +68,7 @@ class PBGenerator:
             num_voters_bound: Tuple[int, int],
             budget_bound: Tuple[int, int],
             cost_bound: Tuple[int, int],
-            utility_bound: Tuple[int, int] = (0, 1)
+            utility_bound: Tuple[int, int] = (0, 1),
     ) -> PBSingleProblem:
         """
         Creates a PBSingleProblem object containing randomly generated instance data, i.e., a random
@@ -85,8 +85,16 @@ class PBGenerator:
         num_projects: int = self._generate_int(num_projects_bound)
         num_voters: int = self._generate_int(num_voters_bound)
         budget: int = self._generate_int(budget_bound)
+
+        if 0 in cost_bound:
+            raise ValueError('The cost bound must only contain positive integers to generate instances.')
+
         costs: List[int] = [self._generate_int(cost_bound) for _ in range(num_projects)]
-        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound)
+        utilities: List[List[int]] = self._generate_utilities(
+            num_projects,
+            num_voters,
+            utility_bound
+        )
 
         return PBSingleProblem(
             num_projects=num_projects,
@@ -122,13 +130,20 @@ class PBGenerator:
             self._generate_int(budget_bound[dim])
             for dim in range(len(budget_bound))
         ]
-        print('generating costs')
+
+        for bound in cost_bound:
+            if 0 in bound:
+                raise ValueError('The cost bounds must only contain positive integers to generate instances.')
+
         costs: List[List[int]] = [
             [self._generate_int(cost_bound[dim]) for _ in range(num_projects)]
             for dim in range(len(budget_bound))
         ]
-        print('generating utilities')
-        utilities: List[List[int]] = self._generate_utilities(num_projects, num_voters, utility_bound)
+        utilities: List[List[int]] = self._generate_utilities(
+            num_projects,
+            num_voters,
+            utility_bound
+        )
 
         return PBMultiProblem(
             num_projects=num_projects,
