@@ -29,9 +29,9 @@ def __genetic_algorithm(
         where genes are randomly generated bits (0 or 1) representing item inclusion/exclusion."""
         # We initialise the first chromosome as the empty allocation in case
         # we generate lots of invalid allocations:
-        return [[0 for _ in range(num_items)]] + [
-            [random.randint(0, 1) for _ in range(num_items)]
-            for _ in range(1, population_size)
+        return [
+            [0 for _ in range(num_items)]
+            for _ in range(population_size)
         ]
 
     def selection() -> Tuple[List[int], ...]:
@@ -105,10 +105,10 @@ def genetic_algorithm(
         capacity: int,
         weights: List[int],
         values: List[int],
-        population_size: int = 100,
+        population_size: int = 200,
         crossover_rate: float = 0.8,
         mutation_rate: float = 0.3,
-        num_generations: int = 250
+        num_generations: int = 100
 ) -> Tuple[List[int], int]:
     """
     A relatively fast algorithm derived from the process of evolution which provides approximations of the
@@ -146,7 +146,7 @@ def genetic_algorithm(
         # Give chromosomes exceeding the capacity
         # a negative fitness:
         if weight > capacity:
-            return -value
+            return 0
 
         return value
 
