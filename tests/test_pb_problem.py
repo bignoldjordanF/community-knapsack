@@ -81,6 +81,29 @@ class TestPBSingleProblem:
                 voters=[1, 2]
             )
 
+    def test_bad_cost_value(self):
+        """Ensures an error is thrown if there are non-positive integers in the costs."""
+        with pytest.raises(PBProblemError):
+            PBSingleProblem(
+                num_projects=2,
+                num_voters=2,
+                budget=10,
+                costs=[3, -2],
+                utilities=[[0, 1], [1, 0]],
+                projects=[1, 2],
+                voters=[1, 2]
+            )
+        with pytest.raises(PBProblemError):
+            PBSingleProblem(
+                num_projects=2,
+                num_voters=2,
+                budget=10,
+                costs=[3, 0],
+                utilities=[[0, 1], [1, 0]],
+                projects=[1, 2],
+                voters=[1, 2]
+            )
+
     def test_success(self):
         """Ensures a valid PBSingleProblem can be created successfully, without errors or warnings."""
         PBSingleProblem(
@@ -124,16 +147,20 @@ class TestPBSingleSolving:
     @pytest.mark.parametrize('problem,value', single_problems)
     @pytest.mark.parametrize('algorithm', exact_algorithms)
     def test_successful_allocations(self, problem: PBSingleProblem, value: int, algorithm: PBSingleAlgorithm):
+        """Ensures that using the PBSingleProblem interface to solve the problem works as expected."""
         assert problem.solve(algorithm).value == value
 
     @pytest.mark.parametrize('problem,value', single_problems)
     @pytest.mark.parametrize('algorithm', approximation_algorithms)
     def test_successful_approximations(self, problem: PBSingleProblem, value: int, algorithm: PBSingleAlgorithm):
+        """Ensures that using the PBSingleProblem interface to solve the problem works as expected."""
         assert abs(value - problem.solve(algorithm).value) <= 0.3 * value
 
     @pytest.mark.parametrize('problem,value', single_problems)
     @pytest.mark.parametrize('algorithm', exact_algorithms + approximation_algorithms)
     def test_timeout(self, problem: PBSingleProblem, value: int, algorithm: PBSingleAlgorithm):
+        """Ensures that solving the problem through the PBSingleProblem interfaces times out when a
+        timeout value is provided."""
         with pytest.warns():
             problem.solve(algorithm, timeout=0.1)
 
@@ -163,6 +190,29 @@ class TestPBMultiProblem:
                 num_voters=2,
                 budget=[10, 20],
                 costs=[[3, 2], [6]],
+                utilities=[[0, 1], [1, 0]],
+                projects=[1, 2],
+                voters=[1, 2]
+            )
+
+    def test_bad_cost_value(self):
+        """Ensures an error is thrown if there are non-positive integers in the costs."""
+        with pytest.raises(PBProblemError):
+            PBMultiProblem(
+                num_projects=2,
+                num_voters=2,
+                budget=[10, 20],
+                costs=[[3, 2], [-6, 3]],
+                utilities=[[0, 1], [1, 0]],
+                projects=[1, 2],
+                voters=[1, 2]
+            )
+        with pytest.raises(PBProblemError):
+            PBMultiProblem(
+                num_projects=2,
+                num_voters=2,
+                budget=[10, 20],
+                costs=[[3, 0], [6, 3]],
                 utilities=[[0, 1], [1, 0]],
                 projects=[1, 2],
                 voters=[1, 2]
@@ -210,15 +260,19 @@ class TestPBMultiSolving:
     @pytest.mark.parametrize('problem,value', multi_problems)
     @pytest.mark.parametrize('algorithm', exact_algorithms)
     def test_successful_allocations(self, problem: PBMultiProblem, value: int, algorithm: PBMultiAlgorithm):
+        """Ensures that using the PBMultiProblem interface to solve the problem works as expected."""
         assert problem.solve(algorithm).value == value
 
     @pytest.mark.parametrize('problem,value', multi_problems)
     @pytest.mark.parametrize('algorithm', approximation_algorithms)
     def test_successful_approximations(self, problem: PBMultiProblem, value: int, algorithm: PBMultiAlgorithm):
+        """Ensures that using the PBMultiProblem interface to solve the problem works as expected."""
         assert abs(value - problem.solve(algorithm).value) <= 0.3 * value
 
     @pytest.mark.parametrize('problem,value', multi_problems)
     @pytest.mark.parametrize('algorithm', exact_algorithms + approximation_algorithms)
     def test_timeout(self, problem: PBMultiProblem, value: int, algorithm: PBMultiAlgorithm):
+        """Ensures that solving the problem through the PBMultiProblem interfaces times out when a
+        timeout value is provided."""
         with pytest.warns():
             problem.solve(algorithm, timeout=0.1)

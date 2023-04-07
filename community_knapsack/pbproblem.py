@@ -95,6 +95,9 @@ class _PBProblem(ABC):
         :param timeout: The maximum number of seconds before the algorithm aborts, or -1 for no timeout.
         :return: An allocation for the problem, its overall value and the run-time in milliseconds.
         """
+        if self.num_projects == 0:
+            return PBResult([], 0, 0, 0.0, algorithm.name, algorithm.is_approximate())
+
         start_time: float = default_timer()
 
         # Create multiprocessing queue to receive allocation:
@@ -161,6 +164,10 @@ class PBSingleProblem(_PBProblem):
         # Verify Parameters
         if self.num_projects != len(costs):
             raise PBProblemError(f'There were {len(costs)} project costs found but {self.num_projects} expected.')
+
+        for pid, cost in enumerate(costs):
+            if cost <= 0:
+                raise PBProblemError(f'The cost of project {pid} was {cost} but must be a positive integer.')
 
         self.budget: int = budget
         self.costs: Sequence[int] = costs
@@ -229,6 +236,9 @@ class PBMultiProblem(_PBProblem):
             if len(cost) != self.num_projects:
                 raise PBProblemError(f'There were {len(cost)} costs found in dimension {dim} but {num_projects} '
                                      f'expected.')
+            for pid, p_cost in enumerate(cost):
+                if p_cost <= 0:
+                    raise PBProblemError(f'The cost of project {pid} was {p_cost} but must be a positive integer.')
 
         self.budget: Sequence[int] = budget
         self.costs: Sequence[Sequence[int]] = costs
