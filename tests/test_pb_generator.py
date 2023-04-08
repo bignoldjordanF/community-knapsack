@@ -37,8 +37,7 @@ class TestPBGenerator:
                 num_projects_bound=(1, 10),
                 num_voters_bound=(1, 10),
                 budget_bound=(2000, 10_000),
-                cost_bound=(0, 3000),
-                utility_bound=(0, 1)
+                cost_bound=(0, 3000)
             )
 
     def test_fail_multi_zero_costs(self):
@@ -49,14 +48,13 @@ class TestPBGenerator:
                 num_projects_bound=(1, 10),
                 num_voters_bound=(1, 10),
                 budget_bound=((-2000, 10_000), (10, 50)),
-                cost_bound=((100, 3000), (1, 5)),
-                utility_bound=(0, 1)
+                cost_bound=((100, 3000), (1, 5))
             )
 
     def test_generate_utilities(self):
         """Ensures that non-uniform utility generation produces the expected results."""
         generator: PBGenerator = PBGenerator(seed=5)
-        utilities: List[List[int]] = generator._generate_utilities(5, 5, (0, 1))
+        utilities: List[List[int]] = generator._generate_utilities(5, 5)
         assert utilities == [
             [1, 1, 0, 1, 0],
             [0, 0, 0, 1, 1],
@@ -72,8 +70,7 @@ class TestPBGenerator:
             num_projects_bound=(1, 10),
             num_voters_bound=(1, 10),
             budget_bound=(2000, 10_000),
-            cost_bound=(100, 3000),
-            utility_bound=(0, 1)
+            cost_bound=(100, 3000)
         )
         assert problem.num_projects == 10
         assert problem.num_voters == 5
@@ -94,8 +91,7 @@ class TestPBGenerator:
             num_projects_bound=(1, 10),
             num_voters_bound=(1, 10),
             budget_bound=((2000, 10_000), (10, 50)),
-            cost_bound=((100, 3000), (1, 5)),
-            utility_bound=(0, 1)
+            cost_bound=((100, 3000), (1, 5))
         )
         assert problem.num_projects == 10
         assert problem.num_voters == 5
