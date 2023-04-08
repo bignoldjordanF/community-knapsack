@@ -56,13 +56,13 @@ class TestPBGenerator:
     def test_generate_utilities(self):
         """Ensures that non-uniform utility generation produces the expected results."""
         generator: PBGenerator = PBGenerator(seed=5)
-        utilities: List[List[int]] = generator._generate_utilities(5, 5, (0, 1), (1, 3))
+        utilities: List[List[int]] = generator._generate_utilities(5, 5, (0, 1))
         assert utilities == [
-            [0, 1, 0, 1, 0],
-            [0, 1, 0, 0, 0],
+            [1, 1, 0, 1, 0],
             [0, 0, 0, 1, 1],
-            [0, 1, 0, 0, 1],
-            [0, 1, 0, 0, 0]
+            [0, 1, 0, 0, 0],
+            [0, 1, 1, 0, 1],
+            [0, 0, 0, 1, 0]
         ]
 
     def test_single_problem_generation(self):
@@ -75,18 +75,16 @@ class TestPBGenerator:
             cost_bound=(100, 3000),
             utility_bound=(0, 1)
         )
-        assert problem.num_projects == 4
-        assert problem.num_voters == 7
-        assert problem.budget == 9286
-        assert problem.costs == [1524, 2221, 1132, 840]
+        assert problem.num_projects == 10
+        assert problem.num_voters == 5
+        assert problem.budget == 8076
+        assert problem.costs == [1568, 2928, 2770, 2271, 218, 2007, 1120, 2758, 312, 742]
         assert problem.utilities == [
-            [1, 0, 1, 1],
-            [0, 0, 0, 1],
-            [0, 0, 0, 0],
-            [0, 1, 1, 0],
-            [0, 1, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 0]
+            [0, 1, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+            [0, 1, 1, 0, 1, 1, 0, 0, 1, 0],
+            [1, 1, 0, 1, 0, 1, 1, 1, 1, 1]
         ]
 
     def test_multi_problem_generation(self):
@@ -99,21 +97,19 @@ class TestPBGenerator:
             cost_bound=((100, 3000), (1, 5)),
             utility_bound=(0, 1)
         )
-        assert problem.num_projects == 4
-        assert problem.num_voters == 7
-        assert problem.budget == [9286, 26]
+        assert problem.num_projects == 10
+        assert problem.num_voters == 5
+        assert problem.budget == [8076, 32]
         assert problem.costs == [
-            [2221, 1132, 840, 2082],
-            [4, 1, 3, 1]
+            [2928, 2770, 2271, 218, 2007, 1120, 2758, 312, 742, 563],
+            [3, 4, 2, 4, 5, 1, 5, 2, 1, 2]
         ]
         assert problem.utilities == [
-            [0, 0, 0, 0],
-            [1, 0, 0, 0],
-            [1, 0, 1, 1],
-            [0, 0, 1, 0],
-            [1, 0, 0, 1],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0]
+            [1, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+            [0, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+            [1, 0, 1, 1, 0, 0, 1, 0, 1, 1]
         ]
 
 
