@@ -1,6 +1,7 @@
 from community_knapsack import PBSingleProblem, PBMultiProblem
 from typing import Sequence, Tuple, List
 from random import Random
+import numpy as np
 import warnings
 
 
@@ -18,7 +19,7 @@ class PBGenerator:
         :param seed: The random seed used to generate the problems. Use the same seed to obtain the same
         problems.
         """
-        self._random = Random()
+        self._random = np.random.RandomState()
         if seed != -1:
             self._random.seed(seed)
 
@@ -33,6 +34,10 @@ class PBGenerator:
         if bound[0] > bound[1]:
             raise ValueError(f'The lower bound `{bound[0]}` must be less than or '
                              f'equal to the upper bound `{bound[1]}`.')
+
+        if bound[0] == bound[1]:
+            return bound[0]
+
         return self._random.randint(bound[0], bound[1])
 
     def _generate_utilities(
@@ -56,20 +61,20 @@ class PBGenerator:
         if vote_length_bound[0] < 0:
             vote_length_bound = (0, vote_length_bound[1])
 
-        if vote_length_bound[1] < 0:
+        if vote_length_bound[1] < 0 or vote_length_bound[1] > num_projects:
             vote_length_bound = (vote_length_bound[0], num_projects)
 
         if utility_bound[0] <= 0:
             utility_bound = (1, utility_bound[1])
 
-        weightings: List[float] = [min(max(self._random.gauss(0.5, 0.2), 0), 1) for _ in range(num_projects)]
+        weightings: List[float] = [self._random.uniform(0.1, 0.9) for _ in range(num_projects)]
+        probabilities: List[float] = [weight / sum(weightings) for weight in weightings]
 
         utilities: List[List[int]] = [[0 for _ in range(num_projects)] for _ in range(num_voters)]
 
         for voter in range(num_voters):
             num_votes: int = self._generate_int(vote_length_bound)
-            print(vote_length_bound, num_votes)
-            for selection in self._random.choices(range(num_projects), weightings, k=num_votes):
+            for selection in self._random.choice(range(num_projects), size=num_votes, replace=False, p=probabilities):
                 utilities[voter][selection] = self._generate_int(utility_bound)
 
         return utilities
