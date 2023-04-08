@@ -5,9 +5,9 @@ from random import Random
 
 class PBGenerator:
     """Randomly generates a PBSingleProblem or a PBMultiProblem by generating each parameter
-    within certain specified bounds. The votes can either be uniformly generated or each
-    project can be given some random weighting to simulate `real-world` scenarios in
-    which some projects are more popular than others."""
+    within certain specified bounds. The problems generated are approval voting instances,
+    where each voter approves a random number of projects. This does not generate very
+    realistic instances, but is useful for experimentation and evaluation."""
 
     def __init__(self, seed: int = -1):
         """
@@ -38,8 +38,7 @@ class PBGenerator:
     def _generate_utilities(
             self,
             num_projects: int,
-            num_voters: int,
-            utility_bound: Tuple[int, int]
+            num_voters: int
     ) -> List[List[int]]:
         """
         Generates a random 2-dimensional list of utilities for each voter over each project. Each
@@ -47,19 +46,17 @@ class PBGenerator:
 
         :param num_projects: The number of projects to generate utilities for.
         :param num_voters: The number of voters to generate utilities for.
-        :param utility_bound: The bounds of possible utilities as a tuple (min_bound, max_bound).
         :return: A two-dimensional list of utilities for each voter over each project.
         """
 
-        return [[self._generate_int(utility_bound) for _ in range(num_projects)] for _ in range(num_voters)]
+        return [[self._generate_int((0, 1)) for _ in range(num_projects)] for _ in range(num_voters)]
 
     def generate_single_problem(
             self,
             num_projects_bound: Tuple[int, int],
             num_voters_bound: Tuple[int, int],
             budget_bound: Tuple[int, int],
-            cost_bound: Tuple[int, int],
-            utility_bound: Tuple[int, int] = (0, 1)
+            cost_bound: Tuple[int, int]
     ) -> PBSingleProblem:
         """
         Creates a PBSingleProblem object containing randomly generated instance data, i.e., a random
@@ -70,7 +67,6 @@ class PBGenerator:
         :param num_voters_bound: The minimum and maximum possible number of voters.
         :param budget_bound: The minimum and maximum possible budget.
         :param cost_bound: The minimum and maximum cost for each project.
-        :param utility_bound: The minimum and maximum utility that each voter derives from each project.
         :return: A PBSingleProblem object containing the randomly generated instance.
         """
         num_projects: int = self._generate_int(num_projects_bound)
@@ -84,7 +80,6 @@ class PBGenerator:
         utilities: List[List[int]] = self._generate_utilities(
             num_projects,
             num_voters,
-            utility_bound,
         )
 
         return PBSingleProblem(
@@ -101,7 +96,6 @@ class PBGenerator:
             num_voters_bound: Tuple[int, int],
             budget_bound: Sequence[Tuple[int, int]],
             cost_bound: Sequence[Tuple[int, int]],
-            utility_bound: Tuple[int, int] = (0, 1),
     ) -> PBMultiProblem:
         """
         Creates a PBMultiProblem object containing randomly generated instance data, i.e., a random
@@ -112,7 +106,6 @@ class PBGenerator:
         :param num_voters_bound: The minimum and maximum possible number of voters.
         :param budget_bound: A sequence of minimum and maximum bounds for each budget.
         :param cost_bound: A sequence of minimum and maximum bounds for each project cost for each budget.
-        :param utility_bound: The minimum and maximum utility that each voter derives from each project.
         :return: A PBMultiProblem object containing the randomly generated instance.
         """
         num_projects: int = self._generate_int(num_projects_bound)
@@ -133,7 +126,6 @@ class PBGenerator:
         utilities: List[List[int]] = self._generate_utilities(
             num_projects,
             num_voters,
-            utility_bound
         )
 
         return PBMultiProblem(
