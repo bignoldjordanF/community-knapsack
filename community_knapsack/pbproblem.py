@@ -114,7 +114,7 @@ class _PBProblem(ABC):
             warnings.warn(f'The {algorithm.name} algorithm did not finish within the {timeout} second timeout limit. '
                           f'Try increasing the timeout or using a different algorithm (such as an approximation '
                           f'scheme).')
-            return PBResult([], 0, 0, 0.0, algorithm.name, algorithm.is_approximate())
+            return PBResult([], 0, 0, timeout, algorithm.name, algorithm.is_approximate())
 
         # Otherwise, obtain the result from the result queue:
         allocation, value, cost = result_queue.get()
