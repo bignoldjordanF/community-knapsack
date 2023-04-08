@@ -7,8 +7,7 @@ def main():
         num_projects_bound=(10, 20),
         num_voters_bound=(10, 100),
         budget_bound=(1000, 2000),
-        cost_bound=(100, 750),
-        utility_bound=(0, 5)
+        cost_bound=(100, 750)
     )
     result: PBResult = problem.solve(PBSingleAlgorithm.RATIO_GREEDY)
     print(result)
