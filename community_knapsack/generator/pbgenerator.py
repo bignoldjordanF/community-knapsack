@@ -63,11 +63,12 @@ class PBGenerator:
             utility_bound = (1, utility_bound[1])
 
         weightings: List[float] = [min(max(self._random.gauss(0.5, 0.2), 0), 1) for _ in range(num_projects)]
-        num_votes: int = self._generate_int(vote_length_bound)
 
         utilities: List[List[int]] = [[0 for _ in range(num_projects)] for _ in range(num_voters)]
 
         for voter in range(num_voters):
+            num_votes: int = self._generate_int(vote_length_bound)
+            print(vote_length_bound, num_votes)
             for selection in self._random.choices(range(num_projects), weightings, k=num_votes):
                 utilities[voter][selection] = self._generate_int(utility_bound)
 
