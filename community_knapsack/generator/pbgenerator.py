@@ -5,9 +5,9 @@ from random import Random
 
 class PBGenerator:
     """Randomly generates a PBSingleProblem or a PBMultiProblem by generating each parameter
-    within certain specified bounds. The problems generated are approval voting instances,
-    where each voter approves a random number of projects. This does not generate very
-    realistic instances, but is useful for experimentation and evaluation."""
+    within certain specified bounds. The problems are randomly generated are approval voting
+    instances, where each voter approves a random number of projects. This does not generate
+    very realistic instances, but is useful for experimentation and evaluation."""
 
     def __init__(self, seed: int = -1):
         """
@@ -49,7 +49,17 @@ class PBGenerator:
         :return: A two-dimensional list of utilities for each voter over each project.
         """
 
-        return [[self._generate_int((0, 1)) for _ in range(num_projects)] for _ in range(num_voters)]
+        utilities: List[List[int]] = []
+        probabilities: List[float] = [min(max(self._random.gauss(0.5, 0.2), 0.2), 0.8) for _ in range(num_projects)]
+
+        for voter in range(num_voters):
+            utility: List[int] = [0] * num_projects
+            for project in range(num_projects):
+                if self._random.random() < probabilities[project]:
+                    utility[project] = 1
+            utilities.append(utility)
+
+        return utilities
 
     def generate_single_problem(
             self,
