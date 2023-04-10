@@ -158,10 +158,10 @@ def multi_genetic_algorithm(
         capacities: List[int],
         weights: List[List[int]],
         values: List[int],
-        population_size: int = 100,
+        population_size: int = 200,
         crossover_rate: float = 0.8,
         mutation_rate: float = 0.3,
-        num_generations: int = 250
+        num_generations: int = 100
 ) -> Tuple[List[int], int]:
     """
     A relatively fast algorithm derived from the process of evolution which provides approximations of the
