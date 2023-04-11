@@ -18,7 +18,7 @@ def generate_single_problems(
         cost_bounds: Sequence[Tuple[int, int]],
         seed: int = 181
 ) -> List[PBSingleProblem]:
-    """Generates the problems needed for the evaluation."""
+    """Generates the PBSingleProblem objects needed for an evaluation."""
     problems = []
     generator = PBGenerator(seed=seed)
     for num_projects_bound in num_project_bounds:
@@ -31,6 +31,32 @@ def generate_single_problems(
                         budget_bound=budget_bound,
                         cost_bound=cost_bound
                     ))
+    return problems
+
+
+def generate_multi_problems(
+        num_project_bounds: Sequence[Tuple[int, int]],
+        num_voters_bounds: Sequence[Tuple[int, int]],
+        dimension_bounds: Sequence[int],  # [1, 2]
+        budget_bounds: Sequence[Sequence[Sequence[Tuple[int, int]]]],
+        cost_bounds: Sequence[Sequence[Sequence[Tuple[int, int]]]],
+        seed: int = 181
+) -> List[PBMultiProblem]:
+    """Generates the PBSingleProblem objects needed for an evaluation."""
+    problems = []
+    generator = PBGenerator(seed=seed)
+    for num_projects_bound in num_project_bounds:
+        for num_voters_bound in num_voters_bounds:
+            for did, num_dimensions in enumerate(dimension_bounds):
+                for budget_bound in budget_bounds[did]:
+                    for cost_bound in cost_bounds[did]:
+                        problems.append(generator.generate_multi_problem(
+                            num_projects_bound=num_projects_bound,
+                            num_voters_bound=num_voters_bound,
+                            budget_bound=budget_bound,
+                            cost_bound=cost_bound
+                        ))
+
     return problems
 
 
@@ -113,7 +139,7 @@ def solve_problems(
                 if output:
                     print(pid)
 
-                result = problem.solve(algorithm=algorithm, timeout=timeout)
+                result = problem.solve(algorithm, timeout=timeout)
                 if result.runtime == timeout:
                     fail_count += 1
                 else:
@@ -179,7 +205,7 @@ ALGORITHM_PLOT_SET = {
     PBMultiAlgorithm.DYNAMIC_PROGRAMMING: ('DYP', '#1f77b4'),
 
     PBSingleAlgorithm.BRANCH_AND_BOUND: ('BRB', '#d62728'),
-    PBMultiAlgorithm.BRANCH_AND_BOUND: ('ABR', '#d62728'),
+    PBMultiAlgorithm.BRANCH_AND_BOUND: ('ABR', '#2ca02c'),
 
     PBSingleAlgorithm.ILP_SOLVER: ('IPS', '#9467bd'),
     PBMultiAlgorithm.ILP_SOLVER: ('IPS', '#9467bd'),
