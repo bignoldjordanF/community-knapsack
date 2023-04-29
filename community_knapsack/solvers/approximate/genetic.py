@@ -98,6 +98,9 @@ def __genetic_algorithm(
     best_chromosome: List[int] = max(population, key=fitness_fn)
     best_fitness: int = fitness_fn(best_chromosome)
 
+    if best_fitness == 0:
+        return [], 0
+
     return [idx for idx, val in enumerate(best_chromosome) if val == 1], best_fitness
 
 
@@ -143,8 +146,7 @@ def genetic_algorithm(
                 weight += weights[item]
                 value += values[item]
 
-        # Give chromosomes exceeding the capacity
-        # a negative fitness:
+        # Give chromosomes exceeding the capacity zero fitness:
         if weight > capacity:
             return 0
 
@@ -196,10 +198,9 @@ def multi_genetic_algorithm(
                 weight = [weight[cid] + weights[cid][item] for cid, _ in enumerate(capacities)]
                 value += values[item]
 
-        # Give chromosomes exceeding any capacity
-        # a negative fitness:
+        # Give chromosomes exceeding any capacity zero fitness:
         if any(weight[cid] > capacity for cid, capacity in enumerate(capacities)):
-            return -value
+            return 0
 
         return value
 
