@@ -106,7 +106,7 @@ class TestVoteConversion:
             num_projects=5,
             vote_type='ordinal',
             votes=[2, 3]
-        ) == [0, 0, 8, 7, 0]
+        ) == [0, 0, 5, 4, 0]
 
     def test_ordinal_voting_success_2(self):
         """Ensures that ordinal voting yields the correct utility values."""
@@ -114,7 +114,7 @@ class TestVoteConversion:
             num_projects=5,
             vote_type='ordinal',
             votes=[2, 3, 1]
-        ) == [0, 4, 6, 5, 0]
+        ) == [0, 3, 5, 4, 0]
 
     def test_borda_count(self):
         """Ensures that ordinal voting yields the correct utility values."""

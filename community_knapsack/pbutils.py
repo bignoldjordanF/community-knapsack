@@ -64,28 +64,36 @@ def ordinal_to_utility(
     if max_vote_length == -1:
         max_vote_length = num_projects
 
+    # Use the Borda count, but limit the maximum utility to max_vote_length
+    # if it is specified, or num_projects otherwise:
     utility: List[int] = [0] * num_projects
+    curr_vote: int = min(max_vote_length, num_projects)
 
-    # Use the Borda count if there is a limit on minimum and maximum vote length:
-    if min_vote_length >= 0 and min_vote_length == max_vote_length:
-        count: int = 1
-        for preference in reversed(votes):
-            utility[preference] = count
-            count += 1
-        return utility
-
-    # TODO: Verify or prove this function
-    # Otherwise, simulate cumulative voting by finding some score to distribute
-    # over the projects based on the preferences not submitted:
-    max_utility: int = min(num_projects, max_vote_length)
-    not_submitted: int = max_utility - len(votes)
-    current_utility: int = sum(k for k in range(1, not_submitted+1)) + 1
-
-    for preference in reversed(votes):
-        utility[preference] = current_utility
-        current_utility += 1
+    for preference in votes:
+        utility[preference] = curr_vote
+        curr_vote -= 1
 
     return utility
+
+    # # Use the Borda count if there is a limit on minimum and maximum vote length:
+    # if min_vote_length >= 0 and min_vote_length == max_vote_length:
+    #     count: int = 1
+    #     for preference in reversed(votes):
+    #         utility[preference] = count
+    #         count += 1
+    #     return utility
+    #
+    # # Otherwise, simulate cumulative voting by finding some score to distribute
+    # # over the projects based on the preferences not submitted:
+    # max_utility: int = min(num_projects, max_vote_length)
+    # not_submitted: int = max_utility - len(votes)
+    # current_utility: int = sum(k for k in range(1, not_submitted+1)) + 1
+    #
+    # for preference in reversed(votes):
+    #     utility[preference] = current_utility
+    #     current_utility += 1
+    #
+    # return utility
 
 
 def vote_to_utility(
