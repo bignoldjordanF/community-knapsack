@@ -14,21 +14,10 @@ if __name__ == '__main__':
         seed=181
     )
 
-    g = generator.generate_single_problem(
-        num_projects_bound=(100, 100),
-        num_voters_bound=(2000, 2000),
-        budget_bound=(5000000, 5000000),
-        cost_bound=(100000, 300000)
+    g = generator.generate_multi_problem(
+        num_projects_bound=(150, 150),
+        num_voters_bound=(3000, 3000),
+        budget_bound=((100_000, 100_000), (100, 100), (200, 200), (200, 200), (200, 200)),
+        cost_bound=((5_000, 10_000), (1, 5), (1, 10), (1, 10), (50, 50))
     )
-
-    print(g.solve(PBSingleAlgorithm.ILP_SOLVER))
-    print(g.solve(PBSingleAlgorithm.MEMOIZATION))
-
-    # x = generator.generate_multi_problem(
-    #     num_projects_bound=(50, 50),
-    #     num_voters_bound=(2000, 2000),
-    #     budget_bound=((100_000, 100_000), (50_000, 100_000), (100, 100)),
-    #     cost_bound=((3_000, 8_000), (30, 50), (2, 5))
-    # )
-    # print(x.solve(PBMultiAlgorithm.MEMOIZATION))
-    # print(x.solve(PBMultiAlgorithm.ILP_SOLVER))
+    print(g.solve(PBMultiAlgorithm.MEMOIZATION))

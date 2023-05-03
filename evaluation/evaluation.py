@@ -207,8 +207,8 @@ ALGORITHM_PLOT_SET = {
     PBSingleAlgorithm.BRANCH_AND_BOUND: ('BRB', '#d62728'),
     PBMultiAlgorithm.BRANCH_AND_BOUND: ('ABR', '#2ca02c'),
 
-    PBSingleAlgorithm.ILP_SOLVER: ('IPS', '#9467bd'),
-    PBMultiAlgorithm.ILP_SOLVER: ('IPS', '#9467bd'),
+    PBSingleAlgorithm.ILP_SOLVER: ('CBC', '#9467bd'),
+    PBMultiAlgorithm.ILP_SOLVER: ('CBC', '#9467bd'),
 
     PBSingleAlgorithm.GREEDY: ('GRE', '#1f77b4'),
     PBMultiAlgorithm.GREEDY: ('GRE', '#1f77b4'),
