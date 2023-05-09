@@ -13,7 +13,7 @@ def __greedy(
     the highest (sort_key) value.
 
     :param sort_key: A function which decides how projects should be sorted.
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The allocation found for the problem as a list of project indexes and its overall value.
@@ -55,7 +55,7 @@ def greedy(budget: int, costs: List[int], values: List[int]) -> Tuple[List[int],
     The projects are sorted by their values, and then picked until either the projects or budget has
     been exhausted. Any project that cannot fit is simply skipped.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The allocation found for the problem as a list of project indexes and its overall value.
@@ -75,7 +75,7 @@ def ratio_greedy(budget: int, costs: List[int], values: List[int]) -> Tuple[List
     The projects are sorted by their ratios, and then picked until either the projects or budget has
     been exhausted. Any project that cannot fit is simply skipped.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The allocation found for the problem as a list of project indexes and its overall value.

@@ -122,7 +122,7 @@ def genetic_algorithm(
     parent chromosomes and generate offspring through crossover and mutation. At the end of
     the process, the best chromosome in the population is returned.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :param population_size: The number of chromosomes that are maintained in the population.

@@ -29,7 +29,7 @@ def __bound(budget: int, projects: List[Tuple[int, int, int]], node: AllocationN
     algorithm for the fractional knapsack problem to compute the potential of this node with the remaining
     {node.project + 1, ..., num_projects} projects.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param projects: A list of project tuples (id, value, cost) sorted by value to cost ratio in non-decreasing order.
     :param node: A node representing an allocation (i.e. subset) of the first {1, ..., node.project} projects.
     :return: A fractional value representing the potential value of this allocation given the remaining projects.
@@ -65,12 +65,12 @@ def branch_and_bound(budget: int, costs: List[int], values: List[int]) -> Tuple[
     for a faster result. The run-time is exponential (slow) but can be much faster depending on the
     problem.
 
-    Uses a breadth-first search approach to create a tree of allocations, where each level is an project, and we
+    Uses a breadth-first search approach to create a tree of allocations, where each level is a project, and we
     either decide to include or exclude it. Uses bounding and fathoms nodes to prune branches when there is
     no point exploring any further, thus improving from brute force. The worst-case time complexity is
     O(n^2), but it may perform much more efficiently.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.

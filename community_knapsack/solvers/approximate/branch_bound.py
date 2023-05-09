@@ -99,14 +99,14 @@ def multi_branch_and_bound(
     certain branches for a faster result. The run-time is exponential (slow) but can be much
     faster depending on the problem.
 
-    Uses a breadth-first search approach to create a tree of allocations, where each level is an project,
+    Uses a breadth-first search approach to create a tree of allocations, where each level is a project,
     and we either decide to include or exclude it. Uses an approximation algorithm (ratio greedy) to
     bound and fathom nodes to prune branches when there is no point exploring further. This improves
     from brute force but can lead to inaccuracies due to the bounding approximation. The worst-case
     time complexity is O(n^2 * d), where d is the number of constraints, but it may perform much
     more efficiently.
 
-    :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed these.
+    :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed this number.
     :param costs: A 2D list for each budget and project, e.g., costs[j][i] is the cost of project i to budget j.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The allocation for the problem as a list of project indexes and its overall value.

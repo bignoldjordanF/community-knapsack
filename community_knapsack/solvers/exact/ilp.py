@@ -4,10 +4,9 @@ import pulp
 
 def integer_programming(budget: int, costs: List[int], values: List[int]) -> Tuple[List[int], int]:
     """
-    A branch-and-cut integer programming solver using the PuLP library. This is typically fast,
-    although it can be slow for larger pabulib.
+    A branch-and-cut integer programming solver using the PuLP library.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
@@ -41,8 +40,7 @@ def multi_integer_programming(
         values: List[int]
 ) -> Tuple[List[int], int]:
     """
-    A branch-and-cut integer programming solver using the PuLP library. This is typically fast,
-    although it can be slow for larger pabulib.
+    A branch-and-cut integer programming solver using the PuLP library.
 
     :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed these.
     :param costs: A 2D list for each budget and project, e.g., costs[j][i] is the cost of project i to budget j.

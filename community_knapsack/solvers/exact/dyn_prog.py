@@ -13,7 +13,7 @@ def dynamic_programming(budget: int, costs: List[int], values: List[int]) -> Tup
     solution will eventually be computed in iteration (n, C). The time complexity of the algorithm is pseudo-polynomial
     in the number of projects and budget, i.e., O(nC).
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
@@ -78,7 +78,7 @@ def dynamic_programming_min_cost(budget: int, costs: List[int], values: List[int
     through our dynamic programming matrix to find the best allocation that does not exceed the budget. This runs
     in pseudo-polynomial O(n * n * P)=O(n^2 * P) time in the worst-case, where P is the maximum value (in values).
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
@@ -166,7 +166,7 @@ def multi_dynamic_programming(
     Because we do not know the number of budgets, and we must iterate through {1,...budget} for each budget,
     we generate a potentially massive product of each possible loop. We calculate the maximum possible value at
     each sub-problem, and thus the result is stored in the sub-problem (num_projects, budgets). This algorithm
-    has worst case O(n * max(budgets)^d), and cannot be better than O(n * min(budgets)^d).
+    runs in O(n * max(budgets)^d) time in the worst case, and cannot be better than O(n * min(budgets)^d).
 
     :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed these.
     :param costs: A 2D list for each budget and project, e.g., costs[j][i] is the cost of project i to budget j.

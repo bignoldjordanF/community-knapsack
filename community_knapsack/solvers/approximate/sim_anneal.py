@@ -10,7 +10,7 @@ np.seterr(over='ignore')
 @dataclass
 class Allocation:
     allocation: List[int]
-    """An allocation as a list of zeroes (exclusion) and ones (inclusion) where each value represents an project."""
+    """An allocation as a list of zeroes (exclusion) and ones (inclusion) where each value represents a project."""
 
     value: int
     """The overall value of the allocation."""
@@ -52,7 +52,7 @@ class MultiAllocation(Allocation):
 
     def neighbour(self, values: List[int], costs: List[List[int]]) -> 'MultiAllocation':
         """
-        Generates a neighbouring allocation by randomly selecting an project (bit) in the current allocation
+        Generates a neighbouring allocation by randomly selecting a project (bit) in the current allocation
         and flipping it. If it is currently excluded, it becomes included, and vice versa.
 
         :param values: A list of values for each project, i.e., values[i] is the value for project i.
@@ -166,7 +166,7 @@ def simulated_annealing(
     accepted with some decreasing probability. The best allocation found throughout the process
     is stored and returned.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :param initial_temperature: A decimal representing the likelihood of worse solutions being accepted.

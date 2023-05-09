@@ -11,7 +11,7 @@ def memoization(budget: int, costs: List[int], values: List[int]) -> Tuple[List[
     already been explored thus avoiding re-computation and upper bounding the time complexity of the algorithm to
     be pseudo-polynomial in the number of projects and budget, i.e., O(nC).
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
@@ -59,8 +59,7 @@ def memoization(budget: int, costs: List[int], values: List[int]) -> Tuple[List[
         matrix[i][j] = exclude
         return matrix[i][j]
 
-    # We first consider one (the last) project
-    # and have full budget:
+    # Find the maximum value for all the projects and all the budget:
     best_value: int = explore(num_projects, budget)
     allocation: List[int] = []
 
@@ -138,6 +137,5 @@ def multi_memoization(
         memo[sub_problem] = exclude
         return memo[sub_problem]
 
-    # We first consider one (the last) project
-    # and have full budget:
+    # Find the maximum value for all the projects and all the budgets:
     return explore(num_projects, budgets)

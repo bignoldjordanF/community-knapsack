@@ -13,7 +13,7 @@ def __brute_force(is_cost_valid: Callable[[str], bool], values: List[int]) -> Tu
     best_value: int = 0
 
     # Each n-length binary number from 1,...,n is unique -- each can represent an allocation,
-    # where each bit is an project (1 = included, 0 = excluded):
+    # where each bit is a project (1 = included, 0 = excluded):
     num_allocations: int = 2**num_projects
     for allocation_id in range(num_allocations):
 
@@ -42,7 +42,7 @@ def brute_force(budget: int, costs: List[int], values: List[int]) -> Tuple[List[
 
     As an indication of intractability, it takes ~0.15 seconds for n=15, ~4 seconds for n=20 and ~2 minutes for n=25.
 
-    :param budget: The fixed budget or budget for the problem. The allocation costs cannot exceed this number.
+    :param budget: The fixed budget for the problem. The allocation costs cannot exceed this number.
     :param costs: A list of costs for each project, i.e., costs[i] is the cost for project i.
     :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The optimal allocation for the problem as a list of project indexes and its overall value.
