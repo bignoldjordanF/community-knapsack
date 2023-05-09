@@ -24,7 +24,7 @@ def fptas(budget: int, costs: List[int], values: List[int], accuracy: float = 0.
     # The values are scaled by a factor such that they are polynomial in num_projects;
     # the rounding (casting) to int() removes precision, and thus it becomes
     # approximate:
-    factor: float = epsilon * (float(max_value) / float(num_projects))
+    factor: float = accuracy * (float(max_value) / float(num_projects))
     values: List[int] = [int(float(value) / factor) for value in values]
 
     # The value must be scaled back up by multiplying by factor:
