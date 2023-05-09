@@ -155,8 +155,12 @@ def vote_to_utility(
             utility[vote] = points[idx]
         return utility
 
-    # Ordinal voting uses a different strategy:
+    # Ordinal voting uses the modified Borda count:
     if vote_type in 'ordinal':
         return ordinal_to_utility(num_projects, votes)
 
     return utility
+
+
+
+
