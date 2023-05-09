@@ -6,36 +6,36 @@ from typing import List, Tuple
 
 @dataclass
 class MultiAllocationNode:
-    item: int
-    """The level is the current item being considered, and is an allocation for the first {1, ..., item} items.
-    In other words, it is a subset of the first {1, ..., item} items."""
+    project: int
+    """The level is the current project being considered, and is an allocation for the first {1, ..., project} projects.
+    In other words, it is a subset of the first {1, ..., project} projects."""
 
     value: int
     """The overall value of this allocation."""
 
-    weight: List[int]
-    """The overall weight of this allocation towards each capacity."""
+    cost: List[int]
+    """The overall cost of this allocation towards each budget."""
 
     bound: float
     """The upper bound, promise or potential of this allocation, i.e., how good can this get with the other
-    {item+1, ..., num_items} items?"""
+    {project+1, ..., num_projects} projects?"""
 
     allocation: List[int]
-    """A list representation of the items we have included in the allocation."""
+    """A list representation of the projects we have included in the allocation."""
 
 
-# def __lin_prog_bound(capacities, items, node):
-#     if len(items) == 0 or any(node.weight[cid] > capacity for cid, capacity in enumerate(capacities)):
+# def __lin_prog_bound(budgets, projects, node):
+#     if len(projects) == 0 or any(node.cost[cid] > budget for cid, budget in enumerate(budgets)):
 #         return 0.0
 #
-#     capacities = [capacity - node.weight[cid] for cid, capacity in enumerate(capacities)]
-#     items = items[(node.item + 1):]
+#     budgets = [budget - node.cost[cid] for cid, budget in enumerate(budgets)]
+#     projects = projects[(node.project + 1):]
 #
 #     problem: LpProblem = LpProblem('FractionalKnapsack', LpMaximize)
-#     x = [LpVariable(f'x{i}', lowBound=0, upBound=1, cat='Continuous') for i in range(len(items))]
-#     problem += sum(x[i] * items[i][1] for i in range(len(items)))
-#     for cid, capacity in enumerate(capacities):
-#         problem += sum([x[i] * items[i][2][cid] for i in range(len(items))]) <= capacity
+#     x = [LpVariable(f'x{i}', lowBound=0, upBound=1, cat='Continuous') for i in range(len(projects))]
+#     problem += sum(x[i] * projects[i][1] for i in range(len(projects)))
+#     for cid, budget in enumerate(budgets):
+#         problem += sum([x[i] * projects[i][2][cid] for i in range(len(projects))]) <= budget
 #     problem.solve(PULP_CBC_CMD(msg=False))
 #
 #     if not value(problem.objective):
@@ -44,54 +44,54 @@ class MultiAllocationNode:
 #     return node.value + value(problem.objective)
 
 
-def __multi_bound(capacities, items, node):
+def __multi_bound(budgets, projects, node):
     """
-    Given an allocation node that is a subset of the first {1, ..., node.item} items, we use the ratio greedy
+    Given an allocation node that is a subset of the first {1, ..., node.project} projects, we use the ratio greedy
     algorithm for the fractional multidimensional knapsack problem to approximate the upper bound or potential
-    of this node with the remaining items {node.item + 1, ..., num_items} items. This algorithm does *not*
+    of this node with the remaining projects {node.project + 1, ..., num_projects} projects. This algorithm does *not*
     exactly solve the problem and is an approximation.
 
-    :param capacities: The fixed capacity or budget for the problem. The allocation weights cannot exceed this number.
-    :param items: A list of item tuples (id, value, weight) sorted by value to weight ratio in non-decreasing order.
-    :param node: A node representing an allocation (i.e. subset) of the first {1, ..., node.item} items.
-    :return: A fractional value representing the potential value of this allocation given the remaining items.
+    :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed this number.
+    :param projects: A list of project tuples (id, value, cost) sorted by value to cost ratio in non-decreasing order.
+    :param node: A node representing an allocation (i.e. subset) of the first {1, ..., node.project} projects.
+    :return: A fractional value representing the potential value of this allocation given the remaining projects.
     """
 
-    # If there is no capacity then we want to prune this branch, so give it a
+    # If there is no budget then we want to prune this branch, so give it a
     # zero bound:
-    if any(capacity <= node.weight[cid] for cid, capacity in enumerate(capacities)):
+    if any(budget <= node.cost[cid] for cid, budget in enumerate(budgets)):
         return 0.0
 
     bound: float = node.value
-    item: int = node.item + 1
-    weight: List[int] = node.weight
+    project: int = node.project + 1
+    cost: List[int] = node.cost
 
-    # Add as many full items as possible until we run out of items or the current item cannot fit:
-    while item < len(items) and \
-            all(weight[cid] + items[item][2][cid] <= capacity for cid, capacity in enumerate(capacities)):
-        weight = [weight[cid] + items[item][2][cid] for cid, capacity in enumerate(capacities)]
-        bound += items[item][1]
-        item += 1
+    # Add as many full projects as possible until we run out of projects or the current project cannot fit:
+    while project < len(projects) and \
+            all(cost[cid] + projects[project][2][cid] <= budget for cid, budget in enumerate(budgets)):
+        cost = [cost[cid] + projects[project][2][cid] for cid, budget in enumerate(budgets)]
+        bound += projects[project][1]
+        project += 1
 
-    # If the capacities were insufficient, then include the highest fraction of the item
-    # possible with the remaining capacities:
-    if item < len(items):
-        # In simple terms, take the capacity with the smallest 'wiggle room' and then
-        # fill that capacity as much as possible:
+    # If the budgets were insufficient, then include the highest fraction of the project
+    # possible with the remaining budgets:
+    if project < len(projects):
+        # In simple terms, take the budget with the smallest 'wiggle room' and then
+        # fill that budget as much as possible:
         fraction: float = float('inf')
-        for cid, capacity in enumerate(capacities):
-            diff: int = capacity - weight[cid]  # Amount of 'wiggle room'
-            fraction: float = min(fraction, diff / items[item][2][cid])  # Fraction of item
+        for cid, budget in enumerate(budgets):
+            diff: int = budget - cost[cid]  # Amount of 'wiggle room'
+            fraction: float = min(fraction, diff / projects[project][2][cid])  # Fraction of project
         if fraction == float('inf'):
             fraction = 0.0
-        bound += fraction * items[item][1]  # Update upper value bound
+        bound += fraction * projects[project][1]  # Update upper value bound
 
     return bound
 
 
 def multi_branch_and_bound(
-        capacities: List[int],
-        weights: List[List[int]],
+        budgets: List[int],
+        costs: List[List[int]],
         values: List[int]
 ) -> Tuple[List[int], int]:
     """
@@ -99,51 +99,51 @@ def multi_branch_and_bound(
     certain branches for a faster result. The run-time is exponential (slow) but can be much
     faster depending on the problem.
 
-    Uses a breadth-first search approach to create a tree of allocations, where each level is an item,
+    Uses a breadth-first search approach to create a tree of allocations, where each level is an project,
     and we either decide to include or exclude it. Uses an approximation algorithm (ratio greedy) to
     bound and fathom nodes to prune branches when there is no point exploring further. This improves
     from brute force but can lead to inaccuracies due to the bounding approximation. The worst-case
     time complexity is O(n^2 * d), where d is the number of constraints, but it may perform much
     more efficiently.
 
-    :param capacities: The fixed capacities for the problem. The allocation weights cannot exceed these.
-    :param weights: A 2D list for each capacity and item, e.g., weights[j][i] is the weight of item i to capacity j.
-    :param values: A list of values for each item, i.e., values[i] is the value for item i.
+    :param budgets: The fixed budgets for the problem. The allocation costs cannot exceed these.
+    :param costs: A 2D list for each budget and project, e.g., costs[j][i] is the cost of project i to budget j.
+    :param values: A list of values for each project, i.e., values[i] is the value for project i.
     :return: The allocation for the problem as a list of project indexes and its overall value.
     """
-    num_items: int = len(values)
+    num_projects: int = len(values)
 
-    # The items are considered by their value to weight ratio for the greedy bounding algorithm:
-    items: List[Tuple[int, int, List[int]]] = \
-        [(idx, values[idx], [weights[cid][idx] for cid, _ in enumerate(capacities)]) for idx in range(num_items)]
-    items.sort(key=lambda item: item[1] / sum(item[2]), reverse=True)
+    # The projects are considered by their value to cost ratio for the greedy bounding algorithm:
+    projects: List[Tuple[int, int, List[int]]] = \
+        [(idx, values[idx], [costs[cid][idx] for cid, _ in enumerate(budgets)]) for idx in range(num_projects)]
+    projects.sort(key=lambda project: project[1] / sum(project[2]), reverse=True)
 
     # A queue for breadth-first search, i.e., for constant-time pop operations:
     queue: deque[MultiAllocationNode] = deque()
-    queue.append(MultiAllocationNode(-1, 0, [0] * len(capacities), 0.0, []))  # Root Node
+    queue.append(MultiAllocationNode(-1, 0, [0] * len(budgets), 0.0, []))  # Root Node
 
     best_allocation: List[int] = []
     best_value: int = 0
 
     while queue:
-        # The current node represents an allocation considering `node.item` items:
+        # The current node represents an allocation considering `node.project` projects:
         current_node: MultiAllocationNode = queue.popleft()
-        if current_node.item == num_items - 1:
+        if current_node.project == num_projects - 1:
             continue
 
-        # The include node is the allocation that includes `node.item`:
-        include_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(capacities), 0.0, [])
-        include_node.item = current_node.item + 1
-        include_node.value = current_node.value + items[include_node.item][1]
-        include_node.weight = [
-            current_node.weight[cid] + items[include_node.item][2][cid] for cid, _ in enumerate(capacities)
+        # The include node is the allocation that includes `node.project`:
+        include_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(budgets), 0.0, [])
+        include_node.project = current_node.project + 1
+        include_node.value = current_node.value + projects[include_node.project][1]
+        include_node.cost = [
+            current_node.cost[cid] + projects[include_node.project][2][cid] for cid, _ in enumerate(budgets)
         ]
-        include_node.allocation = current_node.allocation[:] + [items[include_node.item][0]]
-        include_node.bound = __multi_bound(capacities, items, include_node)
+        include_node.allocation = current_node.allocation[:] + [projects[include_node.project][0]]
+        include_node.bound = __multi_bound(budgets, projects, include_node)
 
         # We only update the best allocation in the include case, and it must be valid:
         if include_node.value > best_value and \
-                all(include_node.weight[cid] <= capacity for cid, capacity in enumerate(capacities)):
+                all(include_node.cost[cid] <= budget for cid, budget in enumerate(budgets)):
             best_value = include_node.value
             best_allocation = include_node.allocation
 
@@ -152,13 +152,13 @@ def multi_branch_and_bound(
         if include_node.bound > best_value:
             queue.append(include_node)
 
-        # The exclude node is the allocation that excludes `node.item`:
-        exclude_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(capacities), 0.0, [])
-        exclude_node.item = current_node.item + 1
+        # The exclude node is the allocation that excludes `node.project`:
+        exclude_node: MultiAllocationNode = MultiAllocationNode(0, 0, [0] * len(budgets), 0.0, [])
+        exclude_node.project = current_node.project + 1
         exclude_node.value = current_node.value
-        exclude_node.weight = current_node.weight
+        exclude_node.cost = current_node.cost
         exclude_node.allocation = current_node.allocation[:]
-        exclude_node.bound = __multi_bound(capacities, items, exclude_node)
+        exclude_node.bound = __multi_bound(budgets, projects, exclude_node)
 
         # If the node has more promise or potential than our best value,
         # we do not prune the branch:
