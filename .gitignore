@@ -288,3 +288,5 @@ resources/pabulib/*.pb
 
 # Ignore misc folder
 miscellaneous/
+
+evaluation/
